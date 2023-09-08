@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("public:GermPlugin:4.0.3")
+    compileOnly("public:GermPlugin:4.1.8")
     compileOnly(project(":project:common"))
     compileOnly(project(":project:common-impl"))
 }
