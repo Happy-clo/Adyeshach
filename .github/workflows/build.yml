@@ -1,0 +1,34 @@
+name: Build
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      # 第一次构建
+      - name: build
+        id: build_1
+        run: ./gradlew clean build
+ 
+      - name: upload Spigot Plugin
+        uses: actions/upload-artifact@v3
+        with:
+         name: Adyeshach
+         path: plugin/libs/
