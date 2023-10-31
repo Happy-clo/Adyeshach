@@ -5,7 +5,7 @@ val taboolib_version: String by project
 plugins {
     `maven-publish`
     java
-    id("org.jetbrains.kotlin.jvm") version "1.5.31" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.9.20" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
