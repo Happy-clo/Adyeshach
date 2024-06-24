@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("org.joml:joml:1.10.2")
+    compileOnly("org.joml:joml:1.10.6")
     compileOnly("ink.ptms.core:v12000:12000:mapped")
     compileOnly("ink.ptms.core:v11904:11904:mapped")
     compileOnly("ink.ptms.core:v11904:11904:universal")
