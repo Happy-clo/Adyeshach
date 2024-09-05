@@ -1,4 +1,4 @@
-package ink.ptms.adyeshach.compat.modelengine3
+package ink.ptms.adyeshach.compat.modelengine4
 
 import com.ticxo.modelengine.api.ModelEngineAPI
 import ink.ptms.adyeshach.core.entity.ModelEngine
@@ -11,8 +11,8 @@ import taboolib.common.platform.Awake
 import taboolib.module.kether.*
 
 /**
- * modelengine animation add {token} [speed {double} [lerpin {double} [lerpout {double}]] [ingorelerp {boolean}]]
- * modelengine animation remove {token}
+ * modelengine animation add {token} [speed {double} [lerpin {int} [lerpout {int}]]]
+ * modelengine animation remove {token} [ingorelerp {boolean}]
  */
 @Awake(LifeCycle.LOAD)
 fun init() {
@@ -32,21 +32,24 @@ fun init() {
                         errorBy("error-no-manager-or-entity-selected")
                     }
                     script().getEntities().filterIsInstance<ModelEngine>().forEach { e ->
-                        if (e.modelEngineUniqueId != null) {
-                            val modeledEntity = ModelEngineAPI.getModeledEntity(e.modelEngineUniqueId)
+                        val uuid = e.modelEngineUniqueId
+                        if (uuid != null) {
+                            val modeledEntity = ModelEngineAPI.getModeledEntity(uuid)
                             when (action.lowercase()) {
                                 // 播放动画
                                 "animation" -> {
                                     when (method.lowercase()) {
                                         // 添加
                                         "add" -> {
-                                            modeledEntity.models.forEach { (_, model) ->
-                                                model.animationHandler.playAnimation(token, speed, lerpin, lerpout, ingorelerp)
+                                            modeledEntity.models.values.forEach { m ->
+                                                m.animationHandler.playAnimation(token, speed, lerpin, lerpout, ingorelerp)
                                             }
                                         }
                                         // 删除
                                         "remove" -> {
-                                            modeledEntity.models.forEach { (_, model) -> model.animationHandler.stopAnimation(token) }
+                                            modeledEntity.models.values.forEach { m ->
+                                                m.animationHandler.stopAnimation(token)
+                                            }
                                         }
                                         // 其他
                                         else -> error("Unknown method: $method (add, remove)")

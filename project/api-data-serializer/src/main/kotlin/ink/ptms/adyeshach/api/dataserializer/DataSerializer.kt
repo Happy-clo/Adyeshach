@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.PropertyMap
 import ink.ptms.adyeshach.core.MinecraftMeta
 import io.netty.handler.codec.EncoderException
 import taboolib.library.reflex.Reflex.Companion.getProperty
+import java.io.DataOutput
 import java.util.*
 
 /**
@@ -132,7 +133,11 @@ interface DataSerializer {
         return this
     }
 
+    fun writeComponent(json: String)
+
     fun toNMS(): Any
+
+    fun dataOutput(): DataOutput
 }
 
 fun createDataSerializer(builder: DataSerializer.() -> Unit): DataSerializer {

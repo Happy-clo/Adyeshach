@@ -12,6 +12,8 @@ import ink.ptms.adyeshach.impl.entity.trait.Trait
 import ink.ptms.adyeshach.impl.util.ChunkAccess
 import org.bukkit.*
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
@@ -91,13 +93,13 @@ object TraitPatrol : Trait() {
                 val nodes = entity.getTraitPatrolNodes()
                 nodes.forEachIndexed { i, node ->
                     // 播放轨迹
-                    node.reset()
-                    while (node.index < node.length) {
-                        val next = node.next()
-                        if (next != null) {
-                            player.spawnParticle(Particle.FLAME, next.clone().plus(y = if (i % 2 == 0) 0.0 else 0.2), 5, 0.0, 0.0, 0.0, 0.0)
-                        }
-                    }
+//                    node.reset()
+//                    while (node.index < node.length) {
+//                        val next = node.next()
+//                        if (next != null) {
+//                            player.spawnParticle(Particle.FLAME, next.clone().plus(y = if (i % 2 == 0) 0.0 else 0.2), 5, 0.0, 0.0, 0.0, 0.0)
+//                        }
+//                    }
                     val pos = node.target.clone()
                     // 节点粒子
                     player.spawnParticle(Particle.END_ROD, pos.clone().plus(0.5, 0.5, 0.5), 10, 0.0, 1.0, 0.0, 0.0)
@@ -122,9 +124,21 @@ object TraitPatrol : Trait() {
     }
 
     @SubscribeEvent
-    private fun onSwap(e: PlayerSwapHandItemsEvent) {
-        if (editCacheMap.containsKey(e.player.name)) {
+    private fun onSwap(e: PlayerDropItemEvent) {
+        if (handle(e)) {
             e.isCancelled = true
+        }
+    }
+
+    @SubscribeEvent
+    private fun onSwap(e: PlayerSwapHandItemsEvent) {
+        if (handle(e)) {
+            e.isCancelled = true
+        }
+    }
+
+    private fun handle(e: PlayerEvent): Boolean {
+        if (editCacheMap.containsKey(e.player.name)) {
             e.player.playSound(e.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f)
             if (e.player.isSneaking) {
                 editCacheMap[e.player.name]?.setTraitPatrolNodes(emptyList())
@@ -136,7 +150,9 @@ object TraitPatrol : Trait() {
                 adaptPlayer(e.player).sendTitle("", "", 0, 40, 0)
                 e.player.inventory.takeItem(999) { it.hasName(language.getLang(e.player, "trait-patrol-tool-name")) }
             }
+            return true
         }
+        return false
     }
 
     @SubscribeEvent
@@ -244,7 +260,6 @@ fun EntityInstance.setTraitPatrolNodes(nodes: List<Location>) {
 /**
  * 获取单位的移动轨迹
  */
-@Suppress("UNCHECKED_CAST")
 fun EntityInstance.getTraitPatrolNodes(): List<InterpolatedLocation> {
     if (TraitPatrol.nodesCacheMap.containsKey(uniqueId)) {
         return TraitPatrol.nodesCacheMap[uniqueId]!!

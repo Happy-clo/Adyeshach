@@ -2,9 +2,19 @@ package ink.ptms.adyeshach.api.dataserializer
 
 import ink.ptms.adyeshach.core.MinecraftMeta
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
+import io.netty.handler.codec.EncoderException
+import net.minecraft.SystemUtils
+import net.minecraft.nbt.DynamicOpsNBT
+import net.minecraft.nbt.NBTCompressedStreamTools
+import net.minecraft.network.chat.ComponentSerialization
+import net.minecraft.network.chat.IChatBaseComponent
+import net.minecraft.network.chat.IChatBaseComponent.ChatSerializer
 import net.minecraft.server.v1_9_R2.DataWatcher
 import net.minecraft.server.v1_9_R2.PacketDataSerializer
+import taboolib.module.nms.MinecraftVersion
+import java.io.DataOutput
 
 /**
  * Adyeshach
@@ -54,8 +64,23 @@ class DataSerializerFactoryImpl(val buf: ByteBuf) : DataSerializerFactory, DataS
         return DataWatcher.a(meta.map { it.source() } as List<DataWatcher.Item<*>>, buf as PacketDataSerializer).let { this }
     }
 
+    override fun writeComponent(json: String) {
+        // 1.20.2 没有 ComponentSerialization, 23w40a (1.20.3的快照) 之后加的
+        if (MinecraftVersion.majorLegacy >= 12003) {
+            val component = ChatSerializer.fromJson(json)
+            val nbt = SystemUtils.getOrThrow(ComponentSerialization.CODEC.encodeStart(DynamicOpsNBT.INSTANCE, component)) { err -> EncoderException("Failed to encode: $err $component") }
+            NBTCompressedStreamTools.writeAnyTag(nbt, ByteBufOutputStream(buf))
+        } else {
+            writeUtf(json, 262144)
+        }
+    }
+
     override fun toNMS(): Any {
         return buf
+    }
+
+    override fun dataOutput(): DataOutput {
+        return ByteBufOutputStream(buf)
     }
 
     override fun newSerializer(): DataSerializer {

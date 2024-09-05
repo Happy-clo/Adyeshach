@@ -32,7 +32,7 @@ import java.util.*
 abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(entityTypes), AdyHuman {
 
     /** 玩家 UUID */
-    internal val pid: UUID
+    val pid: UUID
         get() = normalizeUniqueId
 
     /** 是否已经生成 */
@@ -108,26 +108,32 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
                 isHideFromTabList = value?.cbool ?: true
                 true
             }
+
             "name", "player_name", "playername" -> {
                 setName(value ?: "Adyeshach")
                 true
             }
+
             "ping", "player_ping", "playerping" -> {
                 setPing(value?.cint ?: 0)
                 true
             }
+
             "ping_bar", "playe_ping_bar", "playerpingbar", "pingbar" -> {
                 setPingBar(if (value != null) PingBar::class.java.getEnum(value) else PingBar.BAR_5)
                 true
             }
+
             "texture", "player_texture", "playertexture" -> {
                 setTexture(value ?: "")
                 true
             }
+
             "sleeping", "is_sleeping", "issleeping" -> {
                 setSleeping(value?.cbool ?: false)
                 true
             }
+
             else -> false
         }
     }
@@ -179,8 +185,15 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
         if (name.isBlank()) {
             return
         }
-        // 加载皮肤
-        Adyeshach.api().getNetworkAPI().getSkin().getTexture(name).thenAccept { setTexture(it.value(), it.signature()) }
+        val skin = Adyeshach.api().getNetworkAPI().getSkin()
+        // 自动下载的玩家皮肤，会被分类到 ashcon 目录下
+        if (skin.hasTexture("ashcon/$name") || !skin.hasTexture(name)) {
+            skin.getTexture("ashcon/$name").thenAccept { setTexture(it.value(), it.signature()) }
+        }
+        // 主动上传
+        else {
+            skin.getTexture(name).thenAccept { setTexture(it.value(), it.signature()) }
+        }
     }
 
     override fun setTexture(texture: String, signature: String) {
@@ -275,5 +288,45 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
                 }
             }
         }
+//
+//        var blocked = false
+//        var index = -99999
+//        val intercept = arrayListOf<Any>()
+//
+//        @Awake(LifeCycle.ENABLE)
+//        fun init() {
+//            simpleCommand("ady-test-npc") { sender, args ->
+//                blocked = true
+//                Adyeshach.api().getPublicEntityManager(ManagerType.TEMPORARY)
+//                    .create(EntityTypes.PLAYER, sender.cast<Player>().location) {
+//                        index = it.index
+//                    }
+//                submit(delay = 20) {
+//                    blocked = false
+//                }
+//            }
+//        }
+//
+//        @SubscribeEvent
+//        fun onSend(e: PacketSendEvent) {
+//            if (e.packet.name == "PacketPlayOutNamedEntitySpawn") {
+//                info("监测到 ${e.packet.name}, UUID: ${e.packet.read<UUID>("b")}")
+//                val dataWatcher = e.packet.read<Any>("h")
+//                info("dataWatcher: $dataWatcher")
+//                info("dataWatcher.entity: ${dataWatcher?.getProperty<Any>("c")}")
+//            }
+//            try {
+//                if (blocked || e.packet.read<Any>("a") == index) {
+//                    if (e.packet.name == "PacketPlayOutNamedEntitySpawn") {
+//                        info("放行 ${e.packet.name}")
+//                        // e.isCancelled = true
+//                    } else {
+//                        info("拦截 ${e.packet.name}")
+//                        e.isCancelled = true
+//                    }
+//                }
+//            } catch (_: Throwable) {
+//            }
+//        }
     }
 }

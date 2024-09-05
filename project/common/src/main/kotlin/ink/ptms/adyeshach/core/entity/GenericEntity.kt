@@ -10,7 +10,6 @@ import org.bukkit.ChatColor
  * @author 坏黑
  * @since 2022/6/16 00:09
  */
-@Suppress("SpellCheckingInspection")
 interface GenericEntity {
 
     /**
@@ -27,6 +26,11 @@ interface GenericEntity {
      * 发光颜色
      */
     var glowingColor: ChatColor
+
+    /**
+     * 是否可以看见隐形单位
+     */
+    var canSeeInvisible: Boolean
 
     /**
      * 实体在细雪中的停留的时间（应该是）

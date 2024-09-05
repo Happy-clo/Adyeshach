@@ -48,6 +48,8 @@ typealias NMSPacketPlayOutAttachEntity = net.minecraft.network.protocol.game.Pac
 
 typealias NMSPacketPlayOutScoreboardTeam = net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam
 
+typealias NMSPacketPlayOutEntityEffect = net.minecraft.network.protocol.game.PacketPlayOutEntityEffect
+
 typealias NMSPacketDataSerializer = net.minecraft.network.PacketDataSerializer
 
 typealias NMSIRegistry<T> = net.minecraft.core.IRegistry<T>
@@ -119,6 +121,8 @@ typealias CraftMagicNumbers19 = org.bukkit.craftbukkit.v1_19_R2.util.CraftMagicN
 typealias CraftTropicalFishPattern19 = org.bukkit.craftbukkit.v1_19_R2.entity.CraftTropicalFish.CraftPattern
 
 typealias CraftChatMessage19 = org.bukkit.craftbukkit.v1_19_R2.util.CraftChatMessage
+
+typealias CraftWorld19 = org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 
 // 1.16
 
@@ -215,6 +219,14 @@ typealias NMS16VillagerData = net.minecraft.server.v1_16_R3.VillagerData
 typealias NMS16MathHelper = net.minecraft.server.v1_16_R3.MathHelper
 
 typealias NMS16ChatSerializer = net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer
+
+typealias NMS16ChunkCoordIntPair = net.minecraft.server.v1_16_R3.ChunkCoordIntPair
+
+typealias NMS16WorldServer = net.minecraft.server.v1_16_R3.WorldServer
+
+typealias NMS16EntityPlayer = net.minecraft.server.v1_16_R3.EntityPlayer
+
+typealias CraftPlayer16 = org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer
 
 typealias CraftWorld16 = org.bukkit.craftbukkit.v1_16_R3.CraftWorld
 
@@ -377,5 +389,7 @@ typealias NMS9BlockPosition = net.minecraft.server.v1_9_R2.BlockPosition
 typealias CraftItemStack9 = org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack
 
 typealias CraftWorld9 = org.bukkit.craftbukkit.v1_9_R2.CraftWorld
+
+typealias CraftEntity9 = org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity
 
 fun <T> nullable(value: T?): Optional<T> = Optional.fromNullable(value)

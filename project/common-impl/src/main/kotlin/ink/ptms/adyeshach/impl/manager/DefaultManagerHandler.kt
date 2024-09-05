@@ -3,10 +3,13 @@ package ink.ptms.adyeshach.impl.manager
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.impl.DefaultAdyeshachAPI
 import ink.ptms.adyeshach.impl.DefaultAdyeshachBooster
+import ink.ptms.adyeshach.impl.storage.EntityStorage
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.platform.util.bukkitPlugin
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.platform.util.onlinePlayers
 
 /**
@@ -18,6 +21,9 @@ import taboolib.platform.util.onlinePlayers
  */
 internal object DefaultManagerHandler {
 
+    // 当前游戏刻的玩家列表
+    var playersInGameTick: Collection<Player> = listOf()
+
     @Awake(LifeCycle.ACTIVE)
     fun onActive() {
         // 公共管理器
@@ -25,12 +31,13 @@ internal object DefaultManagerHandler {
         // 私有管理器
         onlinePlayers.forEach { Adyeshach.api().setupEntityManager(it) }
         // 公共管理器
-        Bukkit.getScheduler().runTaskTimer(bukkitPlugin, Runnable {
+        submit(period = 1) {
+            playersInGameTick = Bukkit.getOnlinePlayers()
             DefaultAdyeshachBooster.api.localPublicEntityManager.onTick()
             DefaultAdyeshachBooster.api.localPublicEntityManagerTemporary.onTick()
-        }, 1, 1)
+        }
         // 私有管理器
-        Bukkit.getScheduler().runTaskTimer(bukkitPlugin, Runnable {
+        submit(period = 1) {
             onlinePlayers.forEach { player ->
                 if (DefaultAdyeshachAPI.playerEntityManagerMap.containsKey(player.name)) {
                     DefaultAdyeshachAPI.playerEntityManagerMap[player.name]?.onTick()
@@ -39,18 +46,20 @@ internal object DefaultManagerHandler {
                     DefaultAdyeshachAPI.playerEntityTemporaryManagerMap[player.name]?.onTick()
                 }
             }
-        }, 1, 1)
+        }
         // 自动保存
-        Bukkit.getScheduler().runTaskTimerAsynchronously(bukkitPlugin, Runnable {
+        submitAsync(period = 1200, delay = 1200) {
             // 公共管理器
             DefaultAdyeshachBooster.api.localPublicEntityManager.onSave()
             // 私有管理器
-            onlinePlayers.forEach { player ->
-                if (DefaultAdyeshachAPI.playerEntityManagerMap.containsKey(player.name)) {
-                    DefaultAdyeshachAPI.playerEntityManagerMap[player.name]?.onSave()
+            if (EntityStorage.isEnabled()) {
+                onlinePlayers.forEach { player ->
+                    if (DefaultAdyeshachAPI.playerEntityManagerMap.containsKey(player.name)) {
+                        DefaultAdyeshachAPI.playerEntityManagerMap[player.name]?.onSave()
+                    }
                 }
             }
-        }, 1200, 1200)
+        }
     }
 
     @Awake(LifeCycle.DISABLE)

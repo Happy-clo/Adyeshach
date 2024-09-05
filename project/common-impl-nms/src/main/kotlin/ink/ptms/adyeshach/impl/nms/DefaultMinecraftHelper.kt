@@ -1,6 +1,5 @@
 package ink.ptms.adyeshach.impl.nms
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.AdyeshachEntityTypeRegistry
 import ink.ptms.adyeshach.core.MinecraftHelper
@@ -8,14 +7,20 @@ import ink.ptms.adyeshach.core.bukkit.BukkitPaintings
 import ink.ptms.adyeshach.core.bukkit.BukkitParticles
 import ink.ptms.adyeshach.core.entity.EntityTypes
 import ink.ptms.adyeshach.core.util.errorBy
+import ink.ptms.adyeshach.impl.nmspaper.NMSPaper11904
+import ink.ptms.adyeshach.impl.nmspaper.NMSPaper12000
+import ink.ptms.adyeshach.minecraft.ChunkPos
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.entity.TropicalFish
 import org.bukkit.material.MaterialData
 import org.bukkit.util.Vector
+import taboolib.common.platform.function.warning
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Adyeshach
@@ -34,29 +39,23 @@ class DefaultMinecraftHelper : MinecraftHelper {
     val nms13ParticleRegistryBlocks: NMS13IRegistry<NMS13Particle<out NMS13ParticleParam>>
         get() = NMS13IRegistry::class.java.getProperty("PARTICLE_TYPE", isStatic = true)!!
 
-    val entityTypeCache = Caffeine.newBuilder()
-        .expireAfterAccess(30, java.util.concurrent.TimeUnit.MINUTES)
-        .build<EntityTypes, Any>()
+    val entityTypeCache = ConcurrentHashMap<EntityTypes, Any>()
 
-    val paintingCache = Caffeine.newBuilder()
-        .expireAfterAccess(30, java.util.concurrent.TimeUnit.MINUTES)
-        .build<BukkitPaintings, Any>()
+    val paintingCache =ConcurrentHashMap<BukkitPaintings, Any>()
 
-    val particleCache = Caffeine.newBuilder()
-        .expireAfterAccess(30, java.util.concurrent.TimeUnit.MINUTES)
-        .build<BukkitParticles, Any>()
+    val particleCache = ConcurrentHashMap<BukkitParticles, Any>()
 
-    val blockIdCache = Caffeine.newBuilder()
-        .expireAfterAccess(30, java.util.concurrent.TimeUnit.MINUTES)
-        .build<MaterialData, Int>()
+    val blockIdCache = ConcurrentHashMap<MaterialData, Int>()
+
+    var isChunkCheckError = false
 
     override fun adapt(type: EntityTypes): Any {
-        return entityTypeCache.get(type) {
+        return entityTypeCache.getOrPut(type) {
             if (majorLegacy >= 11400) {
                 val names = ArrayList<String>()
                 names += type.name
                 names += typeHandler.getBukkitEntityAliases(type)
-                names.forEach { kotlin.runCatching { return@get NMS16EntityTypes::class.java.getProperty<Any>(it, isStatic = true)!! } }
+                names.forEach { kotlin.runCatching { return@getOrPut NMS16EntityTypes::class.java.getProperty<Any>(it, isStatic = true)!! } }
                 errorBy("error-entity-type-not-supported", "$type $names")
             } else {
                 typeHandler.getBukkitEntityId(type)
@@ -69,7 +68,7 @@ class DefaultMinecraftHelper : MinecraftHelper {
     }
 
     override fun adapt(paintings: BukkitPaintings): Any {
-        return paintingCache.get(paintings) {
+        return paintingCache.getOrPut(paintings) {
             if (MinecraftVersion.major >= 5) {
                 NMS16Paintings::class.java.getProperty<Any>(paintings.index.toString(), isStatic = true)!!
             } else {
@@ -80,11 +79,12 @@ class DefaultMinecraftHelper : MinecraftHelper {
 
     @Suppress("KotlinConstantConditions")
     override fun adapt(particles: BukkitParticles): Any {
-        return particleCache.get(particles) {
+        return particleCache.getOrPut(particles) {
             when {
                 majorLegacy >= 11400 -> {
                     NMS16Particles::class.java.getProperty<Any>(particles.name, isStatic = true) ?: NMS16Particles.FLAME
                 }
+
                 majorLegacy >= 11300 -> {
                     val particle = nms13ParticleRegistryBlocks.get(NMS13MinecraftKey(particles.name.lowercase()))
                     if (particle is NMS13Particle<*>) {
@@ -93,6 +93,7 @@ class DefaultMinecraftHelper : MinecraftHelper {
                         particle
                     }
                 }
+
                 else -> 0
             }
         }!!
@@ -120,7 +121,7 @@ class DefaultMinecraftHelper : MinecraftHelper {
     }
 
     override fun getBlockId(materialData: MaterialData): Int {
-        return blockIdCache.get(materialData) {
+        return blockIdCache.getOrPut(materialData) {
             if (MinecraftVersion.major >= 10) {
                 NMSBlock.getId(CraftMagicNumbers19.getBlock(materialData))
             } else if (MinecraftVersion.major >= 5) {
@@ -145,5 +146,45 @@ class DefaultMinecraftHelper : MinecraftHelper {
 
     override fun craftChatMessageFromString(message: String): Any {
         return CraftChatMessage19.fromString(message)[0]
+    }
+
+    override fun isChunkVisible(player: Player, chunkX: Int, chunkZ: Int): Boolean {
+        if (isChunkCheckError) {
+            return false
+        }
+        // 你改你妈个🥚，我爱说实话
+        try {
+            return NMSPaper12000.instance.isChunkSent(player, chunkX, chunkZ)
+        } catch (_: Throwable) {
+        }
+        // 你改你妈个🥚，我爱说实话
+        try {
+            val craftWorld = player.world as CraftWorld19
+            return NMSPaper11904.instance.isChunkSent(player, craftWorld.handle.chunkSource.chunkMap, chunkX, chunkZ)
+        } catch (_: Throwable) {
+        }
+        return try {
+            // 从 1.18 开始 getVisibleChunk  -> getVisibleChunkIfPresent
+            //             getChunkProvider -> getChunkSource
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_18)) {
+                val craftWorld = player.world as CraftWorld19
+                craftWorld.handle.chunkSource.chunkMap.visibleChunkMap.get(ChunkPos.asLong(chunkX, chunkZ)) != null
+            }
+            // 从 1.14 开始，PlayerChunkMap 改版
+            else if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+                val craftWorld = player.world as CraftWorld16
+                craftWorld.handle.chunkProvider.playerChunkMap.getVisibleChunk(ChunkPos.asLong(chunkX, chunkZ)) != null
+            }
+            // 早期版本
+            else {
+                val craftWorld = player.world as CraftWorld12
+                craftWorld.handle.playerChunkMap.isChunkInUse(chunkX, chunkZ)
+            }
+        } catch (ex: Throwable) {
+            isChunkCheckError = true
+            warning("Unable to check chunk visibility. Please report this issue to the developer.")
+            ex.printStackTrace()
+            false
+        }
     }
 }

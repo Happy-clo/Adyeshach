@@ -1,6 +1,5 @@
 package ink.ptms.adyeshach.impl.nms
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import ink.ptms.adyeshach.api.dataserializer.createDataSerializer
 import ink.ptms.adyeshach.core.*
 import ink.ptms.adyeshach.core.bukkit.BukkitDirection
@@ -11,15 +10,14 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.material.MaterialData
-import taboolib.common.platform.function.info
 import taboolib.common.util.unsafeLazy
-import taboolib.common5.cshort
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.UnsafeAccess
 import taboolib.module.nms.MinecraftVersion
 import java.lang.invoke.MethodHandle
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Adyeshach
@@ -48,11 +46,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
     val nms16Motive: NMS16RegistryBlocks<NMS16Paintings>
         get() = NMS16IRegistry::class.java.getProperty("MOTIVE", isStatic = true)!!
 
-    val motiveCache = Caffeine.newBuilder()
-        .expireAfterAccess(30, java.util.concurrent.TimeUnit.MINUTES)
-        .build<BukkitPaintings, Int> {
-            NMS16IRegistry::class.java.getProperty<Any>("MOTIVE", isStatic = true)!!.invokeMethod<Int>("a", helper.adapt(it))
-        }
+    val motiveCache = ConcurrentHashMap<BukkitPaintings, Int>()
 
     val livingDataWatcherSetterM: MethodHandle by unsafeLazy {
         val field = NMS9PacketPlayOutSpawnEntityLiving::class.java.getDeclaredField("m")
@@ -370,13 +364,15 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
         if (MinecraftVersion.majorLegacy >= 11900) {
             error("spawnEntityPainting() is not supported in this version")
         }
+        // 获取 ID
+        val id = motiveCache.getOrPut(painting) { NMS16IRegistry::class.java.getProperty<Any>("MOTIVE", isStatic = true)!!.invokeMethod<Int>("a", helper.adapt(painting)) }
         // 使用带有 DataSerializer 的构造函数生成数据包
         // 使用 IRegistry.MOTIVE
         if (isUniversal) {
             packetHandler.sendPacket(player, NMSPacketPlayOutSpawnEntityPainting(createDataSerializer {
                 writeVarInt(entityId)
                 writeUUID(uuid)
-                writeVarInt(motiveCache.get(painting)!!)
+                writeVarInt(id)
                 writeBlockPosition(location.blockX, location.blockY, location.blockZ)
                 writeByte(direction.get2DRotationValue().toByte())
             }.toNMS() as NMSPacketDataSerializer))
@@ -387,7 +383,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 it.a(createDataSerializer {
                     writeVarInt(entityId)
                     writeUUID(uuid)
-                    writeVarInt(motiveCache.get(painting)!!)
+                    writeVarInt(id)
                     writeBlockPosition(location.blockX, location.blockY, location.blockZ)
                     writeByte(direction.get2DRotationValue().toByte())
                 }.toNMS() as NMS16PacketDataSerializer)
