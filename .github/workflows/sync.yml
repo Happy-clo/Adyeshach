@@ -5,56 +5,31 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 0 * * *" # 每天运行一次
+    - cron: "0 0 * * *" # every day
   workflow_dispatch:
 
 jobs:
   sync_latest_from_upstream:
-    name: 从上游仓库同步最新提交
+    name: Sync latest commits from upstream repo
     runs-on: ubuntu-latest
     if: ${{ github.event.repository.fork }}
 
     steps:
-      - name: 检出目标仓库
+      - name: Checkout target repo
         uses: actions/checkout@v3
-      
-      - name: 获取上游仓库信息
-        id: get_upstream_info
-        run: |
-          # 获取上游仓库（需要设置 upstream）
-          UPSTREAM_REPO=$(git config --get remote.upstream.url | sed 's/.git//')
-          
-          # 检查上游仓库是否设置
-          if [ -z "$UPSTREAM_REPO" ]; then
-            echo "[错误] 未找到设置的上游仓库。请确保远程仓库中配置了 'upstream'."
-            exit 1
-          fi
 
-          # 获取上游主分支
-          UPSTREAM_BRANCH=$(git ls-remote --symref $UPSTREAM_REPO HEAD | grep '^ref:' | awk '{print $2}' | sed 's|refs/heads/||')
-          echo "上游仓库: $UPSTREAM_REPO"
-          echo "上游主分支: $UPSTREAM_BRANCH"
-
-          # 获取当前主分支
-          TARGET_BRANCH=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
-          echo "当前主分支: $TARGET_BRANCH"
-
-          echo "::set-output name=upstream_repo::$UPSTREAM_REPO"
-          echo "::set-output name=upstream_branch::$UPSTREAM_BRANCH"
-          echo "::set-output name=target_branch::$TARGET_BRANCH"
-
-      - name: 同步上游更改
+      - name: Sync upstream changes
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
-          upstream_sync_repo: ${{ steps.get_upstream_info.outputs.upstream_repo }}
-          upstream_sync_branch: ${{ steps.get_upstream_info.outputs.upstream_branch }}
-          target_sync_branch: ${{ steps.get_upstream_info.outputs.target_branch }}
+          upstream_sync_repo: TabooLib/adyeshach
+          upstream_sync_branch: 2.0
+          target_sync_branch: 2.0
           target_repo_token: ${{ secrets.GITHUB_TOKEN }}
           test_mode: false
 
-      - name: 同步检查
+      - name: Sync check
         if: failure()
         run: |
-          echo "[错误] 由于上游工作流中的更改，GitHub 已停止自动更新。请按照教程手动同步你的分叉。"
+          echo "[Error] Due to changes in the upstream workflow, GitHub has suspended the automatic update. Please manually sync your fork following the tutorial."
           exit 1
