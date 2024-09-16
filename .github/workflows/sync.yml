@@ -1,0 +1,54 @@
+name: Upstream Sync
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 每天运行一次
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    name: 从上游仓库同步最新提交
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.fork }}
+
+    steps:
+      - name: 检出目标仓库
+        uses: actions/checkout@v3
+
+      - name: 获取上游仓库和分支
+        id: get_upstream_info
+        run: |
+          # 获取上游仓库地址
+          UPSTREAM_REPO=$(git remote -v | grep upstream | awk '{print $2}' | sed 's/.git//')
+          echo "上游仓库: $UPSTREAM_REPO"
+
+          # 获取上游主分支
+          UPSTREAM_BRANCH=$(git ls-remote --symref $UPSTREAM_REPO HEAD | grep '^ref:' | awk '{print $2}' | sed 's|refs/heads/||')
+          echo "上游主分支: $UPSTREAM_BRANCH"
+
+          # 获取当前主分支
+          TARGET_BRANCH=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+          echo "当前主分支: $TARGET_BRANCH"
+
+          echo "::set-output name=upstream_repo::$UPSTREAM_REPO"
+          echo "::set-output name=upstream_branch::$UPSTREAM_BRANCH"
+          echo "::set-output name=target_branch::$TARGET_BRANCH"
+
+      - name: 同步上游更改
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: ${{ steps.get_upstream_info.outputs.upstream_repo }}
+          upstream_sync_branch: ${{ steps.get_upstream_info.outputs.upstream_branch }}
+          target_sync_branch: ${{ steps.get_upstream_info.outputs.target_branch }}
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          test_mode: false
+
+      - name: 同步检查
+        if: failure()
+        run: |
+          echo "[错误] 由于上游工作流中的更改，GitHub 已停止自动更新。请按照教程手动同步你的分叉。"
+          exit 1
