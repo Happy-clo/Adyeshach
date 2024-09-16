@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: ./gradlew build --info
+        run: ./gradlew build
 
       - name: Get timestamp and short SHA
         id: timestamp
