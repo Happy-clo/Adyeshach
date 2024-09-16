@@ -17,16 +17,22 @@ jobs:
     steps:
       - name: 检出目标仓库
         uses: actions/checkout@v3
-
-      - name: 获取上游仓库和分支
+      
+      - name: 获取上游仓库信息
         id: get_upstream_info
         run: |
-          # 获取上游仓库地址
-          UPSTREAM_REPO=$(git remote -v | grep upstream | awk '{print $2}' | sed 's/.git//')
-          echo "上游仓库: $UPSTREAM_REPO"
+          # 获取上游仓库（需要设置 upstream）
+          UPSTREAM_REPO=$(git config --get remote.upstream.url | sed 's/.git//')
+          
+          # 检查上游仓库是否设置
+          if [ -z "$UPSTREAM_REPO" ]; then
+            echo "[错误] 未找到设置的上游仓库。请确保远程仓库中配置了 'upstream'."
+            exit 1
+          fi
 
           # 获取上游主分支
           UPSTREAM_BRANCH=$(git ls-remote --symref $UPSTREAM_REPO HEAD | grep '^ref:' | awk '{print $2}' | sed 's|refs/heads/||')
+          echo "上游仓库: $UPSTREAM_REPO"
           echo "上游主分支: $UPSTREAM_BRANCH"
 
           # 获取当前主分支
