@@ -32,7 +32,9 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+           ./gradlew build
+           find . -type f -name "*.jar"
 
       - name: Get timestamp and short SHA
         id: timestamp
