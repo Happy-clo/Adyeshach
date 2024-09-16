@@ -46,7 +46,7 @@ jobs:
         if: success()
         with:
           name: ${{ steps.timestamp.outputs.repo_name }}-${{ steps.timestamp.outputs.short_sha }}
-          path: plugin/libs/*.jar
+          path: build/libs/*.jar
 
       - name: Automatic release
         if: success()
@@ -57,4 +57,4 @@ jobs:
           prerelease: false
           title: "${{ steps.timestamp.outputs.repo_name }}-${{ steps.timestamp.outputs.short_sha }} Release"
           files: |
-            plugin/libs/*.jar
+            build/libs/*.jar
