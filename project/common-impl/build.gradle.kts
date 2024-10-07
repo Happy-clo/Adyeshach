@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("org.ow2.asm:asm:9.1")
+    compileOnly("org.ow2.asm:asm:9.7.1")
     compileOnly("com.eatthepath:fast-uuid:0.2.0")
     compileOnly("org.mongodb:mongo-java-driver:3.12.11")
     compileOnly("ink.ptms.core:v11900:11900:mapped")
