@@ -18,6 +18,8 @@ import java.util.Optional;
 public class BionicSight {
 
     protected final DefaultEntityInstance entity;
+    protected final boolean forceUpdate;
+
     protected float yMaxRotSpeed;
     protected float xMaxRotAngle;
     protected int lookAtCooldown;
@@ -29,7 +31,12 @@ public class BionicSight {
     protected float yHeadRot;
 
     public BionicSight(DefaultEntityInstance entity) {
+        this(entity, false);
+    }
+
+    public BionicSight(DefaultEntityInstance entity, boolean forceUpdate) {
         this.entity = entity;
+        this.forceUpdate = forceUpdate;
     }
 
     public void setLookAt(Vector vector) {
@@ -68,7 +75,7 @@ public class BionicSight {
             this.getXRotD().ifPresent((var0) -> {
                 xRot = rotateTowards(xRot, var0, this.xMaxRotAngle);
             });
-            this.entity.setHeadRotation(EntityPosition.Companion.normalizeYaw(yHeadRot), EntityPosition.Companion.normalizePitch(xRot), false);
+            this.entity.setHeadRotation(EntityPosition.Companion.normalizeYaw(yHeadRot), EntityPosition.Companion.normalizePitch(xRot), forceUpdate);
         }
     }
 
@@ -86,6 +93,10 @@ public class BionicSight {
 
     public boolean isLooking() {
         return this.lookAtCooldown > 0;
+    }
+
+    public void setLookAtCooldown(int lookAtCooldown) {
+        this.lookAtCooldown = lookAtCooldown;
     }
 
     protected Optional<Float> getXRotD() {

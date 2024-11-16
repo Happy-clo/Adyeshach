@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
+import taboolib.common.io.runningClassMapInJar
 import taboolib.common.io.runningClasses
 import taboolib.common.reflect.hasAnnotation
 import java.io.ByteArrayInputStream
@@ -22,9 +23,10 @@ object Serializer {
     val gson = GsonBuilder()
         .setPrettyPrinting()
         .excludeFieldsWithoutExposeAnnotation().run {
-            runningClasses.forEach {
-                if (it.hasAnnotation(SerializerType::class.java)) {
-                    registerTypeHierarchyAdapter(it.getAnnotation(SerializerType::class.java).baseClass.java, it.newInstance())
+            runningClassMapInJar.forEach { (_, cls) ->
+                if (cls.hasAnnotation(SerializerType::class.java)) {
+                    val type = cls.getAnnotation(SerializerType::class.java).type("baseClass").instance
+                    registerTypeHierarchyAdapter(type, cls.newInstance())
                 }
             }
             create()

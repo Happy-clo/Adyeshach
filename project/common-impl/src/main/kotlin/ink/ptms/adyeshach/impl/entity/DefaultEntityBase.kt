@@ -6,6 +6,7 @@ import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.bukkit.data.EntityPosition
 import ink.ptms.adyeshach.core.entity.EntityBase
 import ink.ptms.adyeshach.core.entity.EntityTypes
+import ink.ptms.adyeshach.core.event.AdyeshachIdChangeEvent
 import ink.ptms.adyeshach.core.util.plus
 import org.bukkit.Location
 import java.util.*
@@ -36,16 +37,29 @@ abstract class DefaultEntityBase(
     val metadataMask = ConcurrentHashMap<String, MutableMap<String, Boolean>>()
 
     /**
-     * 实体鉴别 ID
-     */
-    @Expose
-    final override var id = UUID.randomUUID().toString().substring(0, 8)
-
-    /**
      * 实体唯一 ID
      */
     @Expose
     final override val uniqueId = UUID.randomUUID().toString()
+
+    /**
+     * 实体鉴别 ID
+     */
+    @Expose
+    final override var id = uniqueId.substring(0, 8)
+        set(value) {
+            val event = AdyeshachIdChangeEvent(this, field, value)
+            if (event.call()) {
+                field = event.after
+            }
+        }
+
+    /**
+     * 实体在服务端中的确定位置
+     */
+    @Expose
+    override var position = EntityPosition.empty()
+        get() = field.clone()
 
     /**
      * 将实体唯一 ID 转换为 UUID 类型
@@ -58,13 +72,6 @@ abstract class DefaultEntityBase(
             val id = uniqueId
             FastUUID.parseUUID("${id.substring(0, 8)}-${id.substring(8, 12)}-${id.substring(12, 16)}-${id.substring(16, 20)}-${id.substring(20)}")
         }
-
-    /**
-     * 实体在服务端中的确定位置
-     */
-    @Expose
-    override var position = EntityPosition.empty()
-        get() = field.clone()
 
     /**
      * 是否为测试类型

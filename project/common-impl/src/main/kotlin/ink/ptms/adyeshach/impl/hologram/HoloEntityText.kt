@@ -19,7 +19,10 @@ class HoloEntityText(text: String, space: Double) : HoloEntity<AdyArmorStand>(sp
             if (field != value) {
                 field = value
                 entity?.setCustomName(field)
-                entity?.setCustomNameVisible(text.isNotEmpty())
+                // 仅当新文本与当前显示状态不同时才更新可见性
+                if (entity?.isCustomNameVisible() != value.isNotEmpty()) {
+                    entity?.setCustomNameVisible(value.isNotEmpty())
+                }
             }
         }
 

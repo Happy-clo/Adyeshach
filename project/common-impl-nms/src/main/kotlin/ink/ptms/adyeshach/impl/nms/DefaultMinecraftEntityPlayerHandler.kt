@@ -101,7 +101,7 @@ class DefaultMinecraftEntityPlayerHandler : MinecraftEntityPlayerHandler {
         writeVarInt(gameProfile.ping)
         // Name
         writeNullable(gameProfile.name) {
-            val component = Adyeshach.api().getMinecraftAPI().getHelper().craftChatMessageFromString(it)
+            val component = Adyeshach.api().getMinecraftAPI().getHelper().literalChatBaseComponent(it)
             val json = Adyeshach.api().getMinecraftAPI().getHelper().craftChatSerializerToJson(component)
             writeUtf(json, 262144)
         }

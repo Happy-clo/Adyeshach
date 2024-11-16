@@ -1,8 +1,7 @@
 package ink.ptms.adyeshach.impl.entity.trait
 
+import ink.ptms.adyeshach.impl.entity.trait.impl.*
 import taboolib.common.LifeCycle
-import taboolib.common.io.getInstance
-import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
 
 object TraitFactory {
@@ -11,14 +10,11 @@ object TraitFactory {
 
     @Awake(LifeCycle.ENABLE)
     fun init() {
-        runningClasses.forEach {
-            if (Trait::class.java.isAssignableFrom(it) && Trait::class.java != it) {
-                val trait = it.getInstance()?.get() as? Trait
-                if (trait != null) {
-                    traits.add(trait)
-                }
-            }
-        }
+        traits += TraitCommand
+        traits += TraitPatrol
+        traits += TraitSit
+        traits += TraitTitle
+        traits += TraitViewCondition
     }
 
     fun getTraitById(id: String): Trait? {

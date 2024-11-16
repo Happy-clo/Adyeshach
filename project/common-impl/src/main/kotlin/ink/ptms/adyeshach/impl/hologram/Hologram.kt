@@ -24,9 +24,20 @@ class Hologram(val manager: Manager, var origin: Location, var content: List<Ady
     }
 
     override fun update(content: List<Any>) {
-        this.content.forEach { it.remove() }
-        this.content = content.toHologramContents()
-        refresh()
+        // 获取新的内容
+        val newContent = content.toHologramContents()
+        // 检查内容是否发生变化
+        if (this.content.size != newContent.size || this.content.zip(newContent).any { (old, new) -> old::class != new::class }) {
+            // 如果行数或类型发生变化，则完全刷新
+            this.content.forEach { it.remove() }
+            this.content = newContent
+            refresh()
+        } else {
+            // 如果内容相同，则只更新内容
+            this.content.zip(newContent).forEach { (old, new) ->
+                old.merge(new)
+            }
+        }
     }
 
     override fun remove() {

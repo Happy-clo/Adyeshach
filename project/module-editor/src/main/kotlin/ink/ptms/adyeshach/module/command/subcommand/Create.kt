@@ -4,6 +4,7 @@ import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.entity.EntityTypes
 import ink.ptms.adyeshach.core.entity.manager.ManagerType
 import ink.ptms.adyeshach.core.entity.manager.spawnEntity
+import ink.ptms.adyeshach.core.event.AdyeshachEntityCreateByCommandEvent
 import ink.ptms.adyeshach.core.util.sendLang
 import ink.ptms.adyeshach.module.editor.EditPanel
 import org.bukkit.Material
@@ -41,25 +42,31 @@ val createSubCommand = subCommand {
                                 targetBlock.location.add(0.5, blockHeight, 0.5)
                             }
                             val type = EntityTypes.valueOf(ctx["type"].uppercase())
-                            val npc = loc.world.spawnEntity(loc, type, ManagerType.PERSISTENT)
-                            npc.id = ctx["id"]
-                            sender.sendLang("command-create-success-1", npc.uniqueId)
+                            if (AdyeshachEntityCreateByCommandEvent(type, ctx["id"], sender).call()) {
+                                val npc = loc.world.spawnEntity(loc, type, ManagerType.PERSISTENT)
+                                npc.id = ctx["id"]
+                                sender.sendLang("command-create-success-1", npc.uniqueId)
+                            }
                         }
                         // 打开编辑面板
                         "e", "edit" -> {
                             val type = EntityTypes.valueOf(ctx["type"].uppercase())
-                            val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
-                            npc.id = ctx["id"]
-                            EditPanel(sender, npc).open()
+                            if (AdyeshachEntityCreateByCommandEvent(type, ctx["id"], sender).call()) {
+                                val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
+                                npc.id = ctx["id"]
+                                EditPanel(sender, npc).open()
+                            }
                         }
                     }
                 }
             }
             execute<Player> { sender, ctx, _ ->
                 val type = EntityTypes.valueOf(ctx["type"].uppercase())
-                val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
-                npc.id = ctx.self()
-                sender.sendLang("command-create-success-1", npc.uniqueId)
+                if (AdyeshachEntityCreateByCommandEvent(type, ctx.self(), sender).call()) {
+                    val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
+                    npc.id = ctx.self()
+                    sender.sendLang("command-create-success-1", npc.uniqueId)
+                }
             }
         }
     }

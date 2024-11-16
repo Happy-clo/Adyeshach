@@ -3,6 +3,8 @@ package ink.ptms.adyeshach.module.command.subcommand
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.entity.EntityTypes
 import ink.ptms.adyeshach.core.entity.manager.ManagerType
+import ink.ptms.adyeshach.core.event.AdyeshachTrashOpenEvent
+import ink.ptms.adyeshach.core.event.AdyeshachTrashUndoEvent
 import ink.ptms.adyeshach.core.util.*
 import ink.ptms.adyeshach.module.command.EntityTracker
 import ink.ptms.adyeshach.module.command.toEgg
@@ -33,7 +35,7 @@ val undoSubCommand = subCommand {
         // 定向重命名
         execute<CommandSender> { sender, _, args ->
             val file = File(getDataFolder(), "npc/trash/$args.json")
-            if (file.exists()) {
+            if (file.exists() && AdyeshachTrashUndoEvent(sender, file).call()) {
                 try {
                     // 恢复单位
                     val entity = Adyeshach.api().getPublicEntityManager(ManagerType.PERSISTENT).loadEntityFromFile(file)
@@ -64,6 +66,7 @@ val undoSubCommand = subCommand {
 
 @Suppress("DuplicatedCode")
 private fun Player.openTrashMenu(search: String? = null) {
+    if (!AdyeshachTrashOpenEvent(this).call()) return
     // 获取所有文件
     val files = File(getDataFolder(), "npc/trash").listFiles()?.filter { it.extension == "json" } ?: emptyList()
     // 标题

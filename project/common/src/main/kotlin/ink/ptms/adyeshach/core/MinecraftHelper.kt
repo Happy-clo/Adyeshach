@@ -78,7 +78,7 @@ interface MinecraftHelper {
     /**
      * 使用 CraftChatMessage 将字符串转换为 IChatBaseComponent 类型
      */
-    fun craftChatMessageFromString(message: String): Any
+    fun literalChatBaseComponent(message: String): Any
 
     /**
      * 玩家是否正在观察某区块

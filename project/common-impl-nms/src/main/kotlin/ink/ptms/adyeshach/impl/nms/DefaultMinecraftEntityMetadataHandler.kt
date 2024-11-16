@@ -176,7 +176,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                 majorLegacy >= 11900 -> {
                     NMSDataWatcherItem(
                         NMSDataWatcherObject(index, NMSDataWatcherRegistry.COMPONENT),
-                        craftChatMessageFromString(rawMessage) as NMSIChatBaseComponent
+                        jsonToChatBaseComponent(rawMessage) as NMSIChatBaseComponent
                     )
                 }
                 // 因只在 1.19.4 有应用, 因此不做低版本兼容
@@ -191,14 +191,14 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                 majorLegacy >= 11900 -> {
                     NMSDataWatcherItem(
                         NMSDataWatcherObject(index, NMSDataWatcherRegistry.OPTIONAL_COMPONENT),
-                        Optional.ofNullable(if (rawMessage == null) null else craftChatMessageFromString(rawMessage) as NMSIChatBaseComponent)
+                        Optional.ofNullable(if (rawMessage == null) null else jsonToChatBaseComponent(rawMessage) as NMSIChatBaseComponent)
                     )
                 }
 
                 majorLegacy >= 11300 -> {
                     NMS16DataWatcherItem(
                         NMS16DataWatcherObject(index, NMS16DataWatcherRegistry.f),
-                        Optional.ofNullable(if (rawMessage == null) null else craftChatMessageFromString(rawMessage) as NMS16IChatBaseComponent)
+                        Optional.ofNullable(if (rawMessage == null) null else jsonToChatBaseComponent(rawMessage) as NMS16IChatBaseComponent)
                     )
                 }
 
@@ -561,7 +561,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
         return DefaultMeta(NMSJ17.instance.createSnifferStateMeta(index, state))
     }
 
-    fun craftChatMessageFromString(message: String): Any? {
-        return CraftChatMessage19.fromJSON(message)
+    fun jsonToChatBaseComponent(message: String): Any? {
+        return if (isUniversal) CraftChatMessage19.fromJSON(message) else NMS16ChatSerializer.a(message)
     }
 }

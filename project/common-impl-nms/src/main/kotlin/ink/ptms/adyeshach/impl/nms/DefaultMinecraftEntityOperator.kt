@@ -38,7 +38,7 @@ class DefaultMinecraftEntityOperator : MinecraftEntityOperator {
         get() = Adyeshach.api().getMinecraftAPI().getEntityMetadataHandler()
 
     override fun destroyEntity(player: List<Player>, entityId: Int) {
-        packetHandler.sendPacket(player, NMSPacketPlayOutEntityDestroy(entityId))
+        packetHandler.sendPacket(player, NMS16PacketPlayOutEntityDestroy(entityId))
     }
 
     override fun teleportEntity(player: List<Player>, entityId: Int, location: Location, onGround: Boolean) {
@@ -62,7 +62,7 @@ class DefaultMinecraftEntityOperator : MinecraftEntityOperator {
                     writeBoolean(onGround)
                 }.toNMS() as NMS9PacketDataSerializer)
             }
-            // 1.17, 1.18, 1.19, 1.12
+            // 1.17, 1.18, 1.19, 1.20
             // 使用带有 DataSerializer 的构造函数生成数据包
             9, 10, 11, 12 -> NMSPacketPlayOutEntityTeleport(createDataSerializer {
                 writeVarInt(entityId)
@@ -78,6 +78,8 @@ class DefaultMinecraftEntityOperator : MinecraftEntityOperator {
         }
         // 发送数据包
         packetHandler.sendPacket(player, packet)
+        // 同步头部朝向
+        updateHeadRotation(player, entityId, location.yaw)
     }
 
     override fun updateEntityLook(player: List<Player>, entityId: Int, yaw: Float, pitch: Float, onGround: Boolean) {

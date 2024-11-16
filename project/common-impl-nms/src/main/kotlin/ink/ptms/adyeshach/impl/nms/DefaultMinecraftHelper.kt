@@ -41,7 +41,7 @@ class DefaultMinecraftHelper : MinecraftHelper {
 
     val entityTypeCache = ConcurrentHashMap<EntityTypes, Any>()
 
-    val paintingCache =ConcurrentHashMap<BukkitPaintings, Any>()
+    val paintingCache = ConcurrentHashMap<BukkitPaintings, Any>()
 
     val particleCache = ConcurrentHashMap<BukkitParticles, Any>()
 
@@ -144,8 +144,8 @@ class DefaultMinecraftHelper : MinecraftHelper {
         }
     }
 
-    override fun craftChatMessageFromString(message: String): Any {
-        return CraftChatMessage19.fromString(message)[0]
+    override fun literalChatBaseComponent(message: String): Any {
+        return CraftChatMessage16.fromString(message)[0]
     }
 
     override fun isChunkVisible(player: Player, chunkX: Int, chunkZ: Int): Boolean {

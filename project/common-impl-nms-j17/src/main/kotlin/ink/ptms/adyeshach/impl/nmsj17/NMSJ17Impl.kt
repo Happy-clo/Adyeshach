@@ -14,7 +14,6 @@ import net.minecraft.SystemUtils
 import net.minecraft.core.IRegistry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.DynamicOpsNBT
-import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTCompressedStreamTools
 import net.minecraft.network.PacketDataSerializer
 import net.minecraft.network.chat.ComponentSerialization
@@ -33,7 +32,6 @@ import org.bukkit.material.MaterialData
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import taboolib.common.platform.function.info
 import taboolib.common5.Quat
 import taboolib.common5.cfloat
 import taboolib.module.nms.MinecraftVersion
@@ -151,7 +149,7 @@ class NMSJ17Impl : NMSJ17() {
                             // 1.20.4+
                             // writeWithCodec(DynamicOpsNBT.INSTANCE, ComponentSerialization.CODEC, var0);
                             if (MinecraftVersion.majorLegacy >= 12004) {
-                                val component = Adyeshach.api().getMinecraftAPI().getHelper().craftChatMessageFromString(it)
+                                val component = Adyeshach.api().getMinecraftAPI().getHelper().literalChatBaseComponent(it)
                                 val nbt = SystemUtils.getOrThrow(ComponentSerialization.CODEC.encodeStart(DynamicOpsNBT.INSTANCE, component as IChatBaseComponent)) {
                                     EncoderException("Failed to encode: $it")
                                 }
@@ -160,7 +158,7 @@ class NMSJ17Impl : NMSJ17() {
                             // 1.20.4-
                             // writeUtf(ChatSerializer.toJson(var0), 262144);
                             else {
-                                val component = Adyeshach.api().getMinecraftAPI().getHelper().craftChatMessageFromString(it)
+                                val component = Adyeshach.api().getMinecraftAPI().getHelper().literalChatBaseComponent(it)
                                 val json = Adyeshach.api().getMinecraftAPI().getHelper().craftChatSerializerToJson(component)
                                 writeUtf(json, 262144)
                             }
@@ -191,7 +189,7 @@ class NMSJ17Impl : NMSJ17() {
         val listed = gameProfile.listed
         val latency = gameProfile.ping
         val gameMode = if (gameProfile.spectator) EnumGamemode.SPECTATOR else EnumGamemode.CREATIVE
-        val displayName = Adyeshach.api().getMinecraftAPI().getHelper().craftChatMessageFromString(gameProfile.name) as IChatBaseComponent
+        val displayName = Adyeshach.api().getMinecraftAPI().getHelper().literalChatBaseComponent(gameProfile.name) as IChatBaseComponent
         return ClientboundPlayerInfoUpdatePacket.b(uuid, gameProfile.toMojang(uuid), listed, latency, gameMode, displayName, null)
     }
 }

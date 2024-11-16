@@ -1,6 +1,7 @@
 package ink.ptms.adyeshach.module.command.subcommand
 
 import ink.ptms.adyeshach.core.entity.EntityInstance
+import ink.ptms.adyeshach.core.event.AdyeshachEntityRenameByCommandEvent
 import ink.ptms.adyeshach.core.util.sendLang
 import ink.ptms.adyeshach.module.command.EntitySource
 import ink.ptms.adyeshach.module.command.EntityTracker
@@ -23,13 +24,15 @@ val renameSubCommand = subCommand {
             // 定向重命名
             execute<CommandSender> { sender, ctx, _ ->
                 multiControl<RenameEntitySource>(sender, ctx["id"], STANDARD_RENAME_TRACKER, unified = false) {
-                    val old = it.id
-                    // 更名
-                    it.id = ctx.self()
-                    // 打印追踪器
-                    EntityTracker.check(sender, STANDARD_RENAME_TRACKER, it)
-                    // 提示信息
-                    sender.sendLang("command-rename-success", old, it.id)
+                    if (AdyeshachEntityRenameByCommandEvent(it, ctx.self(), sender).call()) {
+                        val old = it.id
+                        // 更名
+                        it.id = ctx.self()
+                        // 打印追踪器
+                        EntityTracker.check(sender, STANDARD_RENAME_TRACKER, it)
+                        // 提示信息
+                        sender.sendLang("command-rename-success", old, it.id)
+                    }
                 }
             }
         }

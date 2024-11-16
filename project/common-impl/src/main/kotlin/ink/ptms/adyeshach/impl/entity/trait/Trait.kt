@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
 import taboolib.common.util.unsafeLazy
 import taboolib.module.configuration.createLocal
+import taboolib.module.configuration.createTempData
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -14,12 +15,12 @@ abstract class Trait {
 
     val data by unsafeLazy {
         try {
-            createLocal("npc/traits/${id()}.yml")
+            createTempData("npc/traits/${id()}.yml")
         } catch (ex: Throwable) {
             ex.printStackTrace()
             val file = "npc/traits/${id()}-temp-${UUID.randomUUID().toString().replace("-", "").lowercase()}.yml"
             Adyeshach.api().getLanguage().sendLang(console().cast(), "trait-data-error", "npc/traits/${id()}.yml", file)
-            createLocal(file)
+            createTempData(file)
         }
     }
 

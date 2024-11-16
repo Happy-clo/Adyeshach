@@ -22,8 +22,6 @@ typealias NMSPacketPlayOutPlayerInfoEnumPlayerInfoAction = net.minecraft.network
 
 typealias NMSPacketPlayOutPlayerInfoPlayerInfoData = net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.PlayerInfoData
 
-typealias NMSPacketPlayOutEntityDestroy = net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy
-
 typealias NMSPacketPlayOutEntityTeleport = net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport
 
 typealias NMSPacketPlayOutEntityLook = net.minecraft.network.protocol.game.PacketPlayOutEntity.PacketPlayOutEntityLook
@@ -237,6 +235,8 @@ typealias CraftItemStack16 = org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItem
 typealias CraftMagicNumbers16 = org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers
 
 typealias CraftTropicalFishPattern16 = org.bukkit.craftbukkit.v1_16_R3.entity.CraftTropicalFish.CraftPattern
+
+typealias CraftChatMessage16 = org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage
 
 // 1.14
 

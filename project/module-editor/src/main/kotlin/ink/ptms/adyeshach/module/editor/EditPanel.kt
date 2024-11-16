@@ -1,6 +1,7 @@
 package ink.ptms.adyeshach.module.editor
 
 import ink.ptms.adyeshach.core.entity.EntityInstance
+import ink.ptms.adyeshach.core.event.AdyeshachEditPanelOpenEvent
 import ink.ptms.adyeshach.module.editor.page.*
 import org.bukkit.entity.Player
 
@@ -14,12 +15,14 @@ import org.bukkit.entity.Player
 class EditPanel(val player: Player, val entity: EntityInstance) {
 
     fun open(type: EditPanelType = EditPanelType.MAIN, page: Int = 0) {
-        when (type) {
-            EditPanelType.MAIN -> PageMain(this).open(page)
-            EditPanelType.TRAITS -> PageTraits(this).open(page)
-            EditPanelType.PUBLIC_META -> PagePublicMeta(this).open(page)
-            EditPanelType.PRIVATE_META -> PagePrivateMeta(this).open(page)
-            EditPanelType.MOVE -> PageMove(this).open(page)
+        if (AdyeshachEditPanelOpenEvent(entity, player).call()) {
+            when (type) {
+                EditPanelType.MAIN -> PageMain(this).open(page)
+                EditPanelType.TRAITS -> PageTraits(this).open(page)
+                EditPanelType.PUBLIC_META -> PagePublicMeta(this).open(page)
+                EditPanelType.PRIVATE_META -> PagePrivateMeta(this).open(page)
+                EditPanelType.MOVE -> PageMove(this).open(page)
+            }
         }
     }
 }
