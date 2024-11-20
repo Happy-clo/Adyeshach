@@ -43,8 +43,9 @@ val createSubCommand = subCommand {
                             }
                             val type = EntityTypes.valueOf(ctx["type"].uppercase())
                             if (AdyeshachEntityCreateByCommandEvent(type, ctx["id"], sender).call()) {
-                                val npc = loc.world.spawnEntity(loc, type, ManagerType.PERSISTENT)
-                                npc.id = ctx["id"]
+                                val npc = loc.world.spawnEntity(loc, type, ManagerType.PERSISTENT) {
+                                    it.id = ctx["id"]
+                                }
                                 sender.sendLang("command-create-success-1", npc.uniqueId)
                             }
                         }
@@ -52,8 +53,9 @@ val createSubCommand = subCommand {
                         "e", "edit" -> {
                             val type = EntityTypes.valueOf(ctx["type"].uppercase())
                             if (AdyeshachEntityCreateByCommandEvent(type, ctx["id"], sender).call()) {
-                                val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
-                                npc.id = ctx["id"]
+                                val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT) {
+                                    it.id = ctx["id"]
+                                }
                                 EditPanel(sender, npc).open()
                             }
                         }
@@ -63,8 +65,9 @@ val createSubCommand = subCommand {
             execute<Player> { sender, ctx, _ ->
                 val type = EntityTypes.valueOf(ctx["type"].uppercase())
                 if (AdyeshachEntityCreateByCommandEvent(type, ctx.self(), sender).call()) {
-                    val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT)
-                    npc.id = ctx.self()
+                    val npc = sender.location.world.spawnEntity(sender.location, type, ManagerType.PERSISTENT) {
+                        it.id = ctx.self()
+                    }
                     sender.sendLang("command-create-success-1", npc.uniqueId)
                 }
             }

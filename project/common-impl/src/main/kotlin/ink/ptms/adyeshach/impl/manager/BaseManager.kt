@@ -54,10 +54,10 @@ open class BaseManager : Manager, ManagerService, TickService {
         // 添加观察者
         entityInstance.viewPlayers.viewers.addAll(player.map { it.name })
         entityInstance.viewPlayers.visible.addAll(player.filter { it.location.safeDistanceIgnoreY(location) < entityInstance.visibleDistance }.map { it.name })
+        function.accept(entityInstance)
         // 唤起事件
         val event = AdyeshachEntityCreateEvent(entityInstance, location)
         if (event.call()) {
-            function.accept(entityInstance)
             // 生成实体
             entityInstance.spawn(event.location)
             // 注册实体

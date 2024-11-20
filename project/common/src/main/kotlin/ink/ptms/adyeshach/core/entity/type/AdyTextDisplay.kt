@@ -13,6 +13,8 @@ import kotlin.math.roundToInt
  */
 interface AdyTextDisplay : AdyDisplay {
 
+    fun setText(value: String)
+
     fun setText(value: ComponentText)
 
     fun getText(): ComponentText

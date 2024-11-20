@@ -18,6 +18,10 @@ import taboolib.module.chat.Components
 @Suppress("SpellCheckingInspection")
 abstract class DefaultTextDisplay(entityTypes: EntityTypes) : DefaultDisplay(entityTypes), AdyTextDisplay {
 
+    override fun setText(value: String) {
+        setText(Components.parseRaw(value))
+    }
+
     override fun setText(value: ComponentText) {
         setMetadata("text", value)
     }
