@@ -7,7 +7,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11903:11903:mapped")
     compileOnly("ink.ptms.core:v11904:11904.2-minimize:mapped")
     compileOnly("ink.ptms.core:v11800:11800:mapped")
-    compileOnly("net.md-5:bungeecord-chat:1.17")
+    compileOnly("net.md-5:bungeecord-chat:1.21-R0.2")
 }
 
 taboolib { subproject = true }
