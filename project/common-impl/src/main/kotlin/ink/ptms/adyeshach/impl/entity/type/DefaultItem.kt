@@ -23,6 +23,7 @@ abstract class DefaultItem(entityTypes: EntityTypes) : DefaultEntity(entityTypes
     override fun visible(viewer: Player, visible: Boolean): Boolean {
         return if (visible) {
             prepareSpawn(viewer) {
+                viewPlayers.visible += viewer.name
                 // 创建客户端对应表
                 registerClientEntity(viewer)
                 // 修正掉落物信息

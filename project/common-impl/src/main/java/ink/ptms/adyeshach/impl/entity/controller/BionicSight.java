@@ -2,7 +2,6 @@ package ink.ptms.adyeshach.impl.entity.controller;
 
 import ink.ptms.adyeshach.core.bukkit.data.EntityPosition;
 import ink.ptms.adyeshach.impl.entity.DefaultEntityInstance;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;

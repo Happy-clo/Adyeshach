@@ -23,7 +23,7 @@ import taboolib.common.util.unsafeLazy
  * @author 坏黑
  * @since 2022/6/19 21:58
  */
-interface DefaultModelEngine : ModelEngine {
+internal interface DefaultModelEngine : ModelEngine {
 
     override fun showModelEngine(viewer: Player): Boolean {
         if (isModelEngineHooked) {

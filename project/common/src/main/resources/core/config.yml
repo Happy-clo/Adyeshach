@@ -10,6 +10,8 @@ Settings:
   # JOIN: 当玩家加入服务器时
   # KEEP_ALIVE: 当玩家发送第一个位置数据包时
   spawn-event: JOIN
+  # JOIN 的延迟，最小为 1
+  spawn-delay: 20
   # 是否在主线程上进行路径计算
   # 异步计算会带来延迟
   pathfinder-sync: true

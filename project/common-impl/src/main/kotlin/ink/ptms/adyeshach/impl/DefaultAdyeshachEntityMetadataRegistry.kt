@@ -1,6 +1,7 @@
 package ink.ptms.adyeshach.impl
 
 import ink.ptms.adyeshach.core.AdyeshachEntityMetadataRegistry
+import ink.ptms.adyeshach.core.AdyeshachParallelTask
 import ink.ptms.adyeshach.core.entity.EntityInstance
 import ink.ptms.adyeshach.core.entity.Meta
 import ink.ptms.adyeshach.core.entity.type.AdyIronGolem
@@ -14,6 +15,7 @@ import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.util.unsafeLazy
+import taboolib.platform.bukkit.parallel
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -34,7 +36,7 @@ class DefaultAdyeshachEntityMetadataRegistry : AdyeshachEntityMetadataRegistry {
     }
 
     init {
-        registerLifeCycleTask(LifeCycle.ENABLE) {
+        parallel(AdyeshachParallelTask.DESCRIPTION_INIT) {
             descriptionMeta.init()
             descriptionUnusedMeta.init()
         }

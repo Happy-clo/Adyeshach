@@ -1,6 +1,6 @@
 package ink.ptms.adyeshach.impl.nms
 
-import ink.ptms.adyeshach.api.dataserializer.createDataSerializer
+import taboolib.module.nms.createDataSerializer
 import ink.ptms.adyeshach.core.*
 import ink.ptms.adyeshach.core.bukkit.BukkitParticles
 import ink.ptms.adyeshach.core.bukkit.BukkitPose
@@ -10,7 +10,7 @@ import ink.ptms.adyeshach.core.entity.type.AdyEntity
 import ink.ptms.adyeshach.core.entity.type.AdySniffer
 import ink.ptms.adyeshach.impl.entity.DefaultEntityInstance
 import ink.ptms.adyeshach.impl.nms.parser.*
-import ink.ptms.adyeshach.impl.nmsj17.NMSJ17
+import ink.ptms.adyeshach.impl.nms.specific.NMS19
 import org.bukkit.Art
 import org.bukkit.entity.Cat
 import org.bukkit.inventory.ItemStack
@@ -102,18 +102,18 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
     override fun createMetadataPacket(entityId: Int, metaList: List<MinecraftMeta>): Any {
         // 1.19.3 变更为 record 类型，因此无法兼容之前的写法
         return if (majorLegacy >= 11903) {
-            NMSJ17.instance.createPacketPlayOutEntityMetadata(entityId, metaList)
+            NMS19.instance.createPacketPlayOutEntityMetadata(entityId, metaList)
         } else if (isUniversal) {
             NMSPacketPlayOutEntityMetadata(createDataSerializer {
                 writeVarInt(entityId)
-                writeMetadata(metaList)
-            }.toNMS() as NMSPacketDataSerializer)
+                writeMetadataLegacy(metaList.map { it.source() })
+            }.build() as NMSPacketDataSerializer)
         } else {
             NMS16PacketPlayOutEntityMetadata().also {
                 it.a(createDataSerializer {
                     writeVarInt(entityId)
-                    writeMetadata(metaList)
-                }.toNMS() as NMS16PacketDataSerializer)
+                    writeMetadataLegacy(metaList.map { it.source() })
+                }.build() as NMS16PacketDataSerializer)
             }
         }
     }
@@ -246,7 +246,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
     override fun createBlockStateMeta(index: Int, blockData: MaterialData): MinecraftMeta {
         return DefaultMeta(
             when {
-                majorLegacy >= 11904 -> NMSJ17.instance.createBlockStateMeta(index, blockData)
+                majorLegacy >= 11904 -> NMS19.instance.createBlockStateMeta(index, blockData)
                 else -> error("Unsupported version: $majorLegacy")
             }
         )
@@ -256,7 +256,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
         return DefaultMeta(
             when {
                 // 在 1.19.4 版本中，BLOCK_STATE 表示 IBlockData ———— 由 OPTIONAL_BLOCK_STATE 代替 Optional<IBlockData>
-                majorLegacy >= 11904 -> NMSJ17.instance.createOptBlockStateMeta(index, blockData)
+                majorLegacy >= 11904 -> NMS19.instance.createOptBlockStateMeta(index, blockData)
                 // 在 1.19.3 版本中，BLOCK_STATE 表示 Optional<IBlockData>
                 majorLegacy >= 11900 -> {
                     NMSDataWatcherItem(
@@ -316,11 +316,11 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                 }
             )
         } catch (ex: ClassCastException) {
-            if (particle == BukkitParticles.HAPPY_VILLAGER) {
-                error("Particle \"HAPPY_VILLAGER\" is not supported in this version")
+            if (particle == BukkitParticles.VILLAGER_HAPPY) {
+                error("Particle \"VILLAGER_HAPPY\" is not supported in this version")
             }
             warning("Particle \"$particle\" is not supported in this version")
-            return createParticleMeta(index, BukkitParticles.HAPPY_VILLAGER)
+            return createParticleMeta(index, BukkitParticles.VILLAGER_HAPPY)
         }
     }
 
@@ -453,7 +453,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                         BukkitPose.SLEEPING -> NMSEntityPose.SLEEPING
                         BukkitPose.SWIMMING -> NMSEntityPose.SWIMMING
                         BukkitPose.SPIN_ATTACK -> NMSEntityPose.SPIN_ATTACK
-                        BukkitPose.CROUCHING -> NMSEntityPose.CROUCHING
+                        BukkitPose.SNEAKING, BukkitPose.CROUCHING -> NMSEntityPose.CROUCHING
                         BukkitPose.DYING -> NMSEntityPose.DYING
                         BukkitPose.LONG_JUMPING -> NMSEntityPose.LONG_JUMPING
                         BukkitPose.CROAKING -> NMSEntityPose.CROAKING
@@ -462,6 +462,10 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                         BukkitPose.SNIFFING -> NMSEntityPose.SNIFFING
                         BukkitPose.DIGGING -> NMSEntityPose.DIGGING
                         BukkitPose.EMERGING -> NMSEntityPose.EMERGING
+                        BukkitPose.SITTING -> TODO()
+                        BukkitPose.SLIDING -> TODO()
+                        BukkitPose.SHOOTING -> TODO()
+                        BukkitPose.INHALING -> TODO()
                     }
                 )
             } else {
@@ -473,7 +477,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                         BukkitPose.SLEEPING -> NMS16EntityPose.SLEEPING
                         BukkitPose.SWIMMING -> NMS16EntityPose.SWIMMING
                         BukkitPose.SPIN_ATTACK -> NMS16EntityPose.SPIN_ATTACK
-                        BukkitPose.CROUCHING -> NMS16EntityPose.CROUCHING
+                        BukkitPose.SNEAKING, BukkitPose.CROUCHING -> NMS16EntityPose.CROUCHING
                         BukkitPose.DYING -> NMS16EntityPose.DYING
                         else -> NMS16EntityPose.STANDING
                     }
@@ -484,7 +488,7 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
 
     override fun createCatVariantMeta(index: Int, type: Any): MinecraftMeta {
         return if (majorLegacy >= 11903) {
-            DefaultMeta(NMSJ17.instance.createCatVariantMeta(index, type as Cat.Type))
+            DefaultMeta(NMS19.instance.createCatVariantMeta(index, type as Cat.Type))
         } else {
             DefaultMeta(
                 NMSDataWatcherItem(
@@ -550,15 +554,15 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
     }
 
     override fun createVector3Meta(index: Int, value: Vector): MinecraftMeta {
-        return DefaultMeta(NMSJ17.instance.createVector3Meta(index, value))
+        return DefaultMeta(NMS19.instance.createVector3Meta(index, value))
     }
 
     override fun createQuaternionMeta(index: Int, value: Quat): MinecraftMeta {
-        return DefaultMeta(NMSJ17.instance.createQuaternionMeta(index, value))
+        return DefaultMeta(NMS19.instance.createQuaternionMeta(index, value))
     }
 
     override fun createSnifferStateMeta(index: Int, state: AdySniffer.State): MinecraftMeta {
-        return DefaultMeta(NMSJ17.instance.createSnifferStateMeta(index, state))
+        return DefaultMeta(NMS19.instance.createSnifferStateMeta(index, state))
     }
 
     fun jsonToChatBaseComponent(message: String): Any? {

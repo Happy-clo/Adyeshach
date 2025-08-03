@@ -16,6 +16,7 @@ import taboolib.module.configuration.Configuration
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptContext
 import taboolib.module.kether.printKetherErrorMessage
+import taboolib.platform.bukkit.Parallel
 import taboolib.platform.util.sendLang
 import java.io.File
 
@@ -29,7 +30,7 @@ object ListenerGameEvent {
         init()
     }
 
-    @Awake(LifeCycle.ENABLE)
+    @Parallel
     fun init() {
         val file = File(getDataFolder(), "event.yml")
         if (file.exists()) {

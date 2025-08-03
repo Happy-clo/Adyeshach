@@ -15,7 +15,7 @@ import ink.ptms.adyeshach.core.util.getEnumOrNull
 class BukkitParticleParser : MinecraftMetadataParser<BukkitParticles>() {
 
     override fun parse(value: Any): BukkitParticles {
-        return if (value is BukkitParticles) value else BukkitParticles::class.java.getEnumOrNull(value) ?: BukkitParticles.HAPPY_VILLAGER
+        return if (value is BukkitParticles) value else BukkitParticles::class.java.getEnumOrNull(value) ?: BukkitParticles.VILLAGER_HAPPY
     }
 
     override fun createMeta(index: Int, value: BukkitParticles): MinecraftMeta {

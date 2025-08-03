@@ -8,7 +8,6 @@ import ink.ptms.adyeshach.core.entity.EntityInstance
 import ink.ptms.adyeshach.core.entity.manager.ManagerType
 import ink.ptms.adyeshach.core.util.safeDistance
 import ink.ptms.adyeshach.core.util.safeDistanceIgnoreY
-import ink.ptms.adyeshach.impl.storage.EntityStorage
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -36,9 +35,6 @@ class DefaultAdyeshachEntityFinder : AdyeshachEntityFinder {
         api.getPublicEntityManager(ManagerType.PERSISTENT).getEntity(match)?.let { return it }
         api.getPublicEntityManager(ManagerType.TEMPORARY).getEntity(match)?.let { return it }
         if (player != null) {
-            if (EntityStorage.isEnabled()) {
-                api.getPrivateEntityManager(player, ManagerType.PERSISTENT).getEntity(match)?.let { return it }
-            }
             api.getPrivateEntityManager(player, ManagerType.TEMPORARY).getEntity(match)?.let { return it }
         }
         return null
@@ -49,16 +45,13 @@ class DefaultAdyeshachEntityFinder : AdyeshachEntityFinder {
         entity.addAll(api.getPublicEntityManager(ManagerType.PERSISTENT).getEntities(filter))
         entity.addAll(api.getPublicEntityManager(ManagerType.TEMPORARY).getEntities(filter))
         if (player != null) {
-            if (EntityStorage.isEnabled()) {
-                entity.addAll(api.getPrivateEntityManager(player, ManagerType.PERSISTENT).getEntities(filter))
-            }
             entity.addAll(api.getPrivateEntityManager(player, ManagerType.TEMPORARY).getEntities(filter))
         }
         return entity
     }
 
     override fun getVisibleEntities(player: Player, filter: Predicate<EntityInstance>): List<EntityInstance> {
-        return getEntities(player) { it.isViewer(player) && it.getLocation().safeDistanceIgnoreY(player.location) <= it.visibleDistance && filter.test(it) }
+        return getEntities(player) { it.isVisibleViewer(player) && it.getLocation().safeDistanceIgnoreY(player.location) <= it.visibleDistance && filter.test(it) }
     }
 
     override fun getEntitiesFromId(id: String, player: Player?): List<EntityInstance> {

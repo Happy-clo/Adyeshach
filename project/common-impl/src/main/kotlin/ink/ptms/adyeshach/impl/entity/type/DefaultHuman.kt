@@ -10,6 +10,7 @@ import ink.ptms.adyeshach.core.entity.EntityTypes
 import ink.ptms.adyeshach.core.entity.type.AdyHuman
 import ink.ptms.adyeshach.core.entity.type.minecraftVersion
 import ink.ptms.adyeshach.core.event.AdyeshachGameProfileGenerateEvent
+import ink.ptms.adyeshach.core.event.AdyeshachPlayerUUIDGenerateEvent
 import ink.ptms.adyeshach.core.util.getEnum
 import ink.ptms.adyeshach.impl.util.ifTrue
 import org.bukkit.entity.Player
@@ -32,8 +33,11 @@ import java.util.*
 abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(entityTypes), AdyHuman {
 
     /** 玩家 UUID */
-    val pid: UUID
-        get() = normalizeUniqueId
+    val pid: UUID by lazy {
+        val event = AdyeshachPlayerUUIDGenerateEvent(this, normalizeUniqueId)
+        event.call()
+        event.uniqueId
+    }
 
     /** 是否已经生成 */
     internal var spawned = false
@@ -61,6 +65,7 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
     override fun visible(viewer: Player, visible: Boolean): Boolean {
         return if (visible) {
             prepareSpawn(viewer) {
+                viewPlayers.visible += viewer.name
                 // 创建玩家信息
                 addPlayerInfo(viewer)
                 // 创建客户端对应表
@@ -76,20 +81,17 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
                 }
                 // 更新状态
                 submit(delay = 5) {
-                    if (isDie) {
-                        die(viewer = viewer)
-                    }
-                    if (isSleepingLegacy) {
-                        setSleeping(true)
-                    }
-                    if (isHideFromTabList) {
-                        removePlayerInfo(viewer)
-                    }
+                    if (isDie) die(viewer = viewer)
+                    if (isSleepingLegacy) setSleeping(true)
+                }
+                submit(delay = 10) {
+                    if (isHideFromTabList) removePlayerInfo(viewer)
                 }
                 spawned = true
             }
         } else {
             prepareDestroy(viewer) {
+                viewPlayers.visible -= viewer.name
                 // 移除玩家信息
                 removePlayerInfo(viewer)
                 // 销毁实体

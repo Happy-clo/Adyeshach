@@ -3,7 +3,6 @@ package ink.ptms.adyeshach.impl.manager
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.impl.DefaultAdyeshachAPI
 import ink.ptms.adyeshach.impl.DefaultAdyeshachBooster
-import ink.ptms.adyeshach.impl.storage.EntityStorage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
@@ -39,9 +38,6 @@ internal object DefaultManagerHandler {
         // 私有管理器
         submit(period = 1) {
             onlinePlayers.forEach { player ->
-                if (DefaultAdyeshachAPI.playerEntityManagerMap.containsKey(player.name)) {
-                    DefaultAdyeshachAPI.playerEntityManagerMap[player.name]?.onTick()
-                }
                 if (DefaultAdyeshachAPI.playerEntityTemporaryManagerMap.containsKey(player.name)) {
                     DefaultAdyeshachAPI.playerEntityTemporaryManagerMap[player.name]?.onTick()
                 }
@@ -51,14 +47,6 @@ internal object DefaultManagerHandler {
         submitAsync(period = 1200, delay = 1200) {
             // 公共管理器
             DefaultAdyeshachBooster.api.localPublicEntityManager.onSave()
-            // 私有管理器
-            if (EntityStorage.isEnabled()) {
-                onlinePlayers.forEach { player ->
-                    if (DefaultAdyeshachAPI.playerEntityManagerMap.containsKey(player.name)) {
-                        DefaultAdyeshachAPI.playerEntityManagerMap[player.name]?.onSave()
-                    }
-                }
-            }
         }
     }
 

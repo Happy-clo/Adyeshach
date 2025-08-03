@@ -60,6 +60,16 @@ interface EventBus {
     fun prepareNaturalMetaGenerate(callback: Predicate<MetaNaturalGenerateEvent>)
 
     /**
+     * 在实体生成之后插入一段回调函数
+     */
+    fun postSpawn(callback: Consumer<SpawnEvent>)
+
+    /**
+     * 在实体销毁之后插入一段回调函数
+     */
+    fun postDestroy(callback: Consumer<DestroyEvent>)
+
+    /**
      * 在 Meta 更新之后插入一段回调函数
      */
     fun postMetaUpdate(callback: Consumer<MetaUpdateEvent>)

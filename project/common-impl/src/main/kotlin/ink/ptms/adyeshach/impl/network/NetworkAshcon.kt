@@ -20,11 +20,15 @@ class NetworkAshcon : AdyeshachNetworkAPI.Ashcon {
     override fun getTexture(name: String): CompletableFuture<AdyeshachNetworkAPI.SkinTexture> {
         val future = CompletableFuture<AdyeshachNetworkAPI.SkinTexture>()
         submitAsync {
-            val section = Configuration.loadFromString(readFromURL("$ashconURL$name"), Type.JSON)
-            if (section.contains("uuid")) {
-                future.complete(NetworkMineskin.Texture(section.getString("textures.raw.value")!!, section.getString("textures.raw.signature")!!))
-            } else {
-                warning("Unable to request valid data for $name from AshconAPI: ${section.getString("reason")}")
+            try {
+                val section = Configuration.loadFromString(readFromURL("$ashconURL$name"), Type.JSON)
+                if (section.contains("uuid")) {
+                    future.complete(NetworkMineskin.Texture(section.getString("textures.raw.value")!!, section.getString("textures.raw.signature")!!))
+                } else {
+                    warning("Unable to request valid data for $name from AshconAPI: ${section.getString("reason")}")
+                }
+            } catch (ex: Throwable) {
+                future.completeExceptionally(ex)
             }
         }
         return future

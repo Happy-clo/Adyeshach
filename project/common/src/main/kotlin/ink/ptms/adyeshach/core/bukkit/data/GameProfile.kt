@@ -44,6 +44,9 @@ class GameProfile {
     @Expose
     var listed = false // 从 2.0.0-snapshot-27 版本开始，默认不在列表中显示
 
+    @Expose
+    var showHat = true // 是否显示帽子？于 1.21.4 版本开始支持
+
     fun setPingBar(pingBar: PingBar) {
         ping = pingBar.value
     }

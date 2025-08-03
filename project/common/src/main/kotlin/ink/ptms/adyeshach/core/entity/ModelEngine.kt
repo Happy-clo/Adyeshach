@@ -23,6 +23,11 @@ interface ModelEngine {
     var modelEngineUniqueId: UUID?
 
     /**
+     * 模型配置，如果未设置则采用默认配置
+     */
+    var modelEngineOptions: ModelEngineOptions?
+
+    /**
      * 显示 ModelEngine 模型
      */
     fun showModelEngine(viewer: Player): Boolean

@@ -61,18 +61,23 @@ class PrepareMetaTypeCustom(val type: CustomType) : PrepareMetaType {
         }
     }
 
-    private fun parseQuat(args: List<String>) =
-        Quat(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble, args.getOrNull(4).cdouble)
+    private fun parseQuat(args: List<String>): Quat {
+        return Quat(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble, args.getOrNull(4).cdouble)
+    }
 
-    private fun parseVector(args: List<String>) =
-        Vector(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble)
+    private fun parseVector(args: List<String>): Vector {
+        return Vector(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble)
+    }
 
-    private fun parseItemStack(args: List<String>) =
-        XMaterial.matchXMaterial(args.getOrElse(1) { "AIR" }).orElse(XMaterial.AIR).parseItem() ?: ItemStack(Material.AIR)
+    private fun parseItemStack(args: List<String>): ItemStack {
+        return XMaterial.matchXMaterial(args.getOrElse(1) { "AIR" }).orElse(XMaterial.AIR).parseItem() ?: ItemStack(Material.AIR)
+    }
 
-    private fun parseEulerAngle(args: List<String>) =
-        EulerAngle(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble)
+    private fun parseEulerAngle(args: List<String>): EulerAngle {
+        return EulerAngle(args.getOrNull(1).cdouble, args.getOrNull(2).cdouble, args.getOrNull(3).cdouble)
+    }
 
-    private fun parseParticle(args: List<String>) =
-        BukkitParticles::class.java.getEnumOrNull(args[1]) ?: BukkitParticles.HAPPY_VILLAGER
+    private fun parseParticle(args: List<String>): BukkitParticles {
+        return BukkitParticles::class.java.getEnumOrNull(args[1]) ?: BukkitParticles.VILLAGER_HAPPY
+    }
 }

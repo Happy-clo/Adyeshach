@@ -19,7 +19,7 @@ import taboolib.common.platform.function.submit
 import taboolib.module.navigation.BoundingBox
 import taboolib.platform.util.isMainhand
 
-object ModelEngineEvents {
+internal object ModelEngineEvents {
 
     @Awake(LifeCycle.ENABLE)
     fun init() {

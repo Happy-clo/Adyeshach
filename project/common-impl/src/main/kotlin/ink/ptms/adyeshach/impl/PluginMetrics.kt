@@ -4,13 +4,13 @@ import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.entity.manager.ManagerType
 import ink.ptms.adyeshach.core.event.AdyeshachEntityCreateEvent
 import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.metrics.Metrics
 import taboolib.module.metrics.charts.AdvancedPie
 import taboolib.module.metrics.charts.SingleLineChart
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.bukkit.Parallel
 
 object PluginMetrics {
 
@@ -19,7 +19,7 @@ object PluginMetrics {
 
     private var createdEntities = 0
 
-    @Awake(LifeCycle.ACTIVE)
+    @Parallel(runOn = LifeCycle.ENABLE)
     private fun init() {
         metrics = Metrics(8827, BukkitPlugin.getInstance().description.version, Platform.BUKKIT)
         metrics.addCustomChart(SingleLineChart("entities") {

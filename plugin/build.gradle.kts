@@ -25,7 +25,7 @@ taboolib {
     relocate("com.eatthepath.uuid.", "ink.ptms.adyeshach.taboolib.library.uuid.")
     relocate("org.spongepowered.math.", "ink.ptms.adyeshach.taboolib.library.math.")
     // download
-    relocate("org.mongodb.", "org.mongodb_3_12_11.")
+    // relocate("org.mongodb.", "org.mongodb_3_12_11.")
     relocate("com.github.benmanes.caffeine.", "com.github.benmanes.caffeine_2_9_3.")
 }
 
@@ -53,7 +53,8 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://repo.tabooproject.org/repository/releases")
+            url = uri("http://sacredcraft.cn:8081/repository/releases")
+            isAllowInsecureProtocol = true
             credentials {
                 username = project.findProperty("taboolibUsername").toString()
                 password = project.findProperty("taboolibPassword").toString()

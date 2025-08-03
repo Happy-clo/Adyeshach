@@ -54,7 +54,9 @@ internal object DefaultPlayerEvents {
     fun onJoin(e: PlayerJoinEvent) {
         if (AdyeshachSettings.spawnTrigger == SpawnTrigger.JOIN) {
             // 延迟初始化
-            submit(delay = 20) { Adyeshach.api().setupEntityManager(e.player) }
+            submit(delay = AdyeshachSettings.spawnDelay.toLong()) {
+                Adyeshach.api().setupEntityManager(e.player)
+            }
         }
     }
 

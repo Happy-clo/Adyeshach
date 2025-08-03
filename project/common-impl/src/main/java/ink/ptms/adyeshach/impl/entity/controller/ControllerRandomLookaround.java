@@ -7,7 +7,6 @@ import ink.ptms.adyeshach.core.entity.controller.Controller;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * net.minecraft.world.entity.ai.goal.PathfinderGoalRandomLookaround

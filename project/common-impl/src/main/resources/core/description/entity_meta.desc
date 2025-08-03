@@ -911,8 +911,8 @@ ink.ptms.adyeshach.core.entity.type.AdyHorseBase
 ink.ptms.adyeshach.core.entity.type.AdyEntityLiving
      isHandActive 1b | activeHand 2b | isInRiptideSpinAttack 4b
         &living0
-        @17+
         17 8
+        12 --
      health f 1.0
         &living1
         17 9

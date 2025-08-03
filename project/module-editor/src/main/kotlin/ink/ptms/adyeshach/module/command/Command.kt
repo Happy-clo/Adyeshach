@@ -3,6 +3,7 @@ package ink.ptms.adyeshach.module.command
 import ink.ptms.adyeshach.core.ADYESHACH_PREFIX
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.AdyeshachSettings
+import ink.ptms.adyeshach.impl.entity.controller.KetherController
 import ink.ptms.adyeshach.module.command.subcommand.*
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.command.CommandBody
@@ -73,6 +74,7 @@ object Command {
     val reload = subCommand {
         execute<CommandSender> { sender, _, _ ->
             AdyeshachSettings.conf.reload()
+            KetherController.init()
             ResettableLazy.reset()
             sender.sendMessage("${ADYESHACH_PREFIX}Reloaded.")
         }

@@ -43,8 +43,7 @@ class ActionController(val symbol: Symbol, val controller: String?) : ScriptActi
                     it.registerController(controller.generate(it))
                 }
                 Symbol.REMOVE -> {
-                    val controller = registry.getControllerGenerator(id!!) ?: error("Unknown controller $id")
-                    it.unregisterController(controller.type)
+                    it.unregisterController(id!!)
                 }
                 Symbol.RESET -> it.resetController()
             }

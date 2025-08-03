@@ -12,7 +12,6 @@ import ink.ptms.adyeshach.impl.util.toRGB
  * @author 坏黑
  * @since 2023/1/10 00:25
  */
-@Suppress("SpellCheckingInspection")
 abstract class DefaultAreaEffectCloud(entityTypes: EntityTypes) : DefaultEntity(entityTypes), AdyAreaEffectCloud {
 
     @Suppress("DuplicatedCode")

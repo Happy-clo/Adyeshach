@@ -107,13 +107,13 @@ private fun DefaultEntityInstance.handleTracker(player: Player) {
         // 是可见的观察者
         if (player.name in viewPlayers.visible) {
             // 销毁不在可视范围内的实体
-            if (!isInVisibleDistance(player) && !ServerTours.isRoutePlaying(player) && visible(player, false)) {
-                viewPlayers.visible -= player.name
+            if (!isInVisibleDistance(player) && !ServerTours.isRoutePlaying(player)) {
+                visible(player, false)
             }
         } else {
             // 属否在可视范围内 && 所在区块是否可见 && 显示实体
-            if (isInVisibleDistance(player) && Adyeshach.api().getMinecraftAPI().getHelper().isChunkVisible(player, chunkX, chunkZ) && visible(player, true)) {
-                viewPlayers.visible += player.name
+            if (isInVisibleDistance(player) && Adyeshach.api().getMinecraftAPI().getHelper().isChunkVisible(player, chunkX, chunkZ)) {
+                visible(player, true)
             }
         }
     }

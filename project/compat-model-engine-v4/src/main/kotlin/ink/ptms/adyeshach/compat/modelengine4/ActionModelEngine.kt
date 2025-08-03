@@ -15,7 +15,7 @@ import taboolib.module.kether.*
  * modelengine animation remove {token} [ingorelerp {boolean}]
  */
 @Awake(LifeCycle.LOAD)
-fun init() {
+internal fun init() {
     if (DefaultModelEngine.isModelEngineHooked) {
         KetherLoader.registerParser(combinationParser {
             it.group(

@@ -24,15 +24,16 @@ private fun actionLook() = combinationParser {
             if (script.getManager() == null || !script.isEntitySelected()) {
                 errorBy("error-no-manager-or-entity-selected")
             }
+            val entities = script.getEntities()
             if (smooth != null) {
                 submitRepeat(5) {
-                    script.getEntities().forEach { e ->
+                    entities.forEach { e ->
                         val lookAt = to as? Location ?: Location(e.world, x ?: e.x, y ?: e.y, z ?: e.z)
                         e.controllerLookAt(lookAt.x, lookAt.y, lookAt.z, 35f, 40f)
                     }
                 }
             } else {
-                script.getEntities().forEach { e -> e.setHeadRotation(to as? Location ?: Location(e.world, x ?: e.x, y ?: e.y, z ?: e.z)) }
+                entities.forEach { e -> e.setHeadRotation(to as? Location ?: Location(e.world, x ?: e.x, y ?: e.y, z ?: e.z)) }
             }
         }
     }

@@ -76,6 +76,9 @@ class NetworkMineskin : AdyeshachNetworkAPI.Skin {
             Adyeshach.api().getNetworkAPI().getAshcon().getTexture(playerName).thenAccept {
                 future.complete(it)
                 submitAsync { newFile(getDataFolder(), "skin/ashcon/$name").writeText(Serializer.gson.toJson(it)) }
+            }.exceptionally { t ->
+                future.completeExceptionally(t)
+                null
             }
         }
         return future

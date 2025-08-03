@@ -84,6 +84,13 @@ object AdyeshachSettings {
     }
 
     /**
+     * JOIN 延迟时间
+     */
+    @ConfigNode("Settings.spawn-delay")
+    var spawnDelay = 0
+        get() = if (field == 0) 20 else field
+
+    /**
      * 是否为自动删除世界
      */
     fun isAutoDeleteWorld(world: String): Boolean {

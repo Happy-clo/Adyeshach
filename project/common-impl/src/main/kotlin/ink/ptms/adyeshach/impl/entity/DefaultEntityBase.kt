@@ -7,8 +7,6 @@ import ink.ptms.adyeshach.core.bukkit.data.EntityPosition
 import ink.ptms.adyeshach.core.entity.EntityBase
 import ink.ptms.adyeshach.core.entity.EntityTypes
 import ink.ptms.adyeshach.core.event.AdyeshachIdChangeEvent
-import ink.ptms.adyeshach.core.util.plus
-import org.bukkit.Location
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2022/6/19 15:59
  */
 abstract class DefaultEntityBase(
-    @Expose final override val entityType: EntityTypes = EntityTypes.ZOMBIE
+    @Expose final override val entityType: EntityTypes = EntityTypes.ZOMBIE,
 ) : EntityBase, DefaultMetaable, DefaultTagContainer, DefaultSerializable {
 
     /** 临时标签 */
@@ -82,4 +80,8 @@ abstract class DefaultEntityBase(
      * 是否为无效类型
      */
     override val isInvalid = Adyeshach.api().getEntityTypeRegistry().getEntityFlags(entityType).contains("INVALID")
+
+    override fun toString(): String {
+        return "$entityType($id)"
+    }
 }

@@ -2,6 +2,7 @@ package ink.ptms.adyeshach.impl
 
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.AdyeshachEntityTypeRegistry
+import ink.ptms.adyeshach.core.AdyeshachParallelTask
 import ink.ptms.adyeshach.core.entity.EntityBase
 import ink.ptms.adyeshach.core.entity.EntityInstance
 import ink.ptms.adyeshach.core.entity.EntitySize
@@ -18,11 +19,13 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.info
-import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.util.execution
+import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.module.nms.AsmClassLoader
+import taboolib.platform.bukkit.parallel
 
 /**
  * Adyeshach
@@ -56,17 +59,18 @@ class DefaultAdyeshachEntityTypeRegistry : AdyeshachEntityTypeRegistry {
 
     /** 所有实体对象的原件，用于克隆实体 */
     val originEntityBaseMap = HashMap<EntityTypes, EntityBase>()
-        get() {
-            if (field.isEmpty()) {
-                val time = System.currentTimeMillis()
-                field.putAll(generateEntityBase())
-                info("Proxy classes has been generated (${System.currentTimeMillis() - time}ms)")
-            }
-            return field
-        }
 
     init {
-        registerLifeCycleTask(LifeCycle.ENABLE, 999) { originEntityBaseMap }
+        // 生成实体类
+        parallel(AdyeshachParallelTask.GENERATE_ENTITY_CLASS, dependOn = AdyeshachParallelTask.DESCRIPTION_INIT) {
+            val (_, cost) = execution { originEntityBaseMap += generateEntityBase() }
+            info(
+                """
+                    代理类已生成，用时 $cost 毫秒。
+                    Proxy classes generated in $cost ms.
+                """.t()
+            )
+        }
         // 注册生成回调
         prepareGenerate(object : AdyeshachEntityTypeRegistry.GenerateCallback {
 

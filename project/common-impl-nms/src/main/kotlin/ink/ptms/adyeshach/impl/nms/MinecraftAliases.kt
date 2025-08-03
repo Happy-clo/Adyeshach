@@ -3,7 +3,6 @@ package ink.ptms.adyeshach.impl.nms
 import com.google.common.base.Optional
 
 // Universal
-
 typealias NMSPacketPlayOutSpawnEntity = net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity
 
 // 从 1.19+ 移除

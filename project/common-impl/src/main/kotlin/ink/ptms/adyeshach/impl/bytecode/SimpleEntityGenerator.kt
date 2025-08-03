@@ -25,14 +25,14 @@ class SimpleEntityGenerator : EntityGenerator, Opcodes {
         classWriter.visitSource("$className.java", null)
 
         // 无参构造方法（用于反序列化）
-        var methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-        methodVisitor.visitCode();
-        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
-        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, pet, "ZOMBIE", set);
-        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, baseClass.replace(',', '/'), "<init>", "($set)V", false);
-        methodVisitor.visitInsn(Opcodes.RETURN);
-        methodVisitor.visitMaxs(2, 1);
-        methodVisitor.visitEnd();
+        var methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null)
+        methodVisitor.visitCode()
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
+        methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, pet, "ZOMBIE", set)
+        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, baseClass.replace(',', '/'), "<init>", "($set)V", false)
+        methodVisitor.visitInsn(Opcodes.RETURN)
+        methodVisitor.visitMaxs(2, 1)
+        methodVisitor.visitEnd()
 
         // 构造方法
         methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "($set)V", null, null)

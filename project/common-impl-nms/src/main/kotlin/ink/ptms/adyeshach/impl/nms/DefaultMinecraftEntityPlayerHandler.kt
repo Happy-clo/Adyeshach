@@ -1,13 +1,13 @@
 package ink.ptms.adyeshach.impl.nms
 
-import ink.ptms.adyeshach.api.dataserializer.DataSerializer
-import ink.ptms.adyeshach.api.dataserializer.createDataSerializer
+import taboolib.module.nms.DataSerializer
+import taboolib.module.nms.createDataSerializer
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.MinecraftEntityPlayerHandler
 import ink.ptms.adyeshach.core.MinecraftPacketHandler
 import ink.ptms.adyeshach.core.bukkit.data.GameProfile
 import ink.ptms.adyeshach.core.bukkit.data.GameProfileAction
-import ink.ptms.adyeshach.impl.nmsj17.NMSJ17
+import ink.ptms.adyeshach.impl.nms.specific.NMS19
 import org.bukkit.entity.Player
 import taboolib.module.nms.MinecraftVersion
 import java.util.*
@@ -46,20 +46,20 @@ class DefaultMinecraftEntityPlayerHandler : MinecraftEntityPlayerHandler {
         // 1.19.3
         // PacketPlayOutPlayerInfo 变更为 ClientboundPlayerInfoPacket
         if (majorLegacy >= 11903) {
-            packetHandler.sendPacket(player, NMSJ17.instance.createClientboundPlayerInfoUpdatePacket(uuid, gameProfile, GameProfileAction.initActions()))
+            packetHandler.sendPacket(player, NMS19.instance.createClientboundPlayerInfoUpdatePacket(uuid, gameProfile, GameProfileAction.initActions()))
         }
         // 1.17, 1.18, 1.19
         else if (isUniversal) {
             packetHandler.sendPacket(player, NMSPacketPlayOutPlayerInfo(createDataSerializer {
                 writeAddProfileLegacy(uuid, gameProfile, majorLegacy >= 11900)
-            }.toNMS() as NMSPacketDataSerializer))
+            }.build() as NMSPacketDataSerializer))
         }
         // 1.9 ~ 1.16
         else {
             packetHandler.sendPacket(player, NMS16PacketPlayOutPlayerInfo().also {
                 it.a(createDataSerializer {
                     writeAddProfileLegacy(uuid, gameProfile)
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             })
         }
     }
@@ -68,20 +68,20 @@ class DefaultMinecraftEntityPlayerHandler : MinecraftEntityPlayerHandler {
         // 1.19.3
         // PacketPlayOutPlayerInfo 变更为 ClientboundPlayerInfoPacket
         if (majorLegacy >= 11903) {
-            packetHandler.sendPacket(player, NMSJ17.instance.createClientboundPlayerInfoRemovePacket(uuid))
+            packetHandler.sendPacket(player, NMS19.instance.createClientboundPlayerInfoRemovePacket(uuid))
         }
         // 1.17, 1.18, 1.19
         else if (isUniversal) {
             packetHandler.sendPacket(player, NMSPacketPlayOutPlayerInfo(createDataSerializer {
                 writeRemoveProfile(uuid)
-            }.toNMS() as NMSPacketDataSerializer))
+            }.build() as NMSPacketDataSerializer))
         }
         // 1.9 ~ 1.16
         else {
             packetHandler.sendPacket(player, NMS16PacketPlayOutPlayerInfo().also {
                 it.a(createDataSerializer {
                     writeRemoveProfile(uuid)
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             })
         }
     }

@@ -1,6 +1,6 @@
 package ink.ptms.adyeshach.impl.nms
 
-import ink.ptms.adyeshach.api.dataserializer.createDataSerializer
+import taboolib.module.nms.createDataSerializer
 import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.MinecraftPacketHandler
 import ink.ptms.adyeshach.core.MinecraftScoreboardOperator
@@ -47,7 +47,7 @@ class DefaultMinecraftScoreboardOperator : MinecraftScoreboardOperator {
                         writeVarInt(team.members.size)
                         team.members.forEach { name -> writeUtf(name, 40) }
                     }
-                }.toNMS() as NMS9PacketDataSerializer)
+                }.build() as NMS9PacketDataSerializer)
             }
             // 1.13, 1.14, 1.15, 1.16
             in 5..8 -> NMS13PacketPlayOutScoreboardTeam().also {
@@ -71,7 +71,7 @@ class DefaultMinecraftScoreboardOperator : MinecraftScoreboardOperator {
                         writeVarInt(team.members.size)
                         team.members.forEach { name -> writeUtf(name, 40) }
                     }
-                }.toNMS() as NMS13PacketDataSerializer)
+                }.build() as NMS13PacketDataSerializer)
             }
             // 1.17, 1.18, 1.19, 1.20
             9, 10, 11, 12 -> NMSPacketPlayOutScoreboardTeam(createDataSerializer {
@@ -92,7 +92,7 @@ class DefaultMinecraftScoreboardOperator : MinecraftScoreboardOperator {
                     writeVarInt(team.members.size)
                     team.members.forEach { name -> writeUtf(name) }
                 }
-            }.toNMS() as NMSPacketDataSerializer)
+            }.build() as NMSPacketDataSerializer)
             // 不支持
             else -> error("Unsupported version.")
         }

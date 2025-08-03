@@ -53,6 +53,7 @@ abstract class DefaultFallingBlock(entityTypes: EntityTypes) : DefaultEntity(ent
     override fun visible(viewer: Player, visible: Boolean): Boolean {
         return if (visible) {
             prepareSpawn(viewer) {
+                viewPlayers.visible += viewer.name
                 // 创建客户端对应表
                 registerClientEntity(viewer)
                 // 生成实体

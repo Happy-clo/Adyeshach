@@ -22,6 +22,7 @@ abstract class DefaultEntity(entityType: EntityTypes) : DefaultEntityInstance(en
     override fun visible(viewer: Player, visible: Boolean): Boolean {
         return if (visible) {
             prepareSpawn(viewer) {
+                viewPlayers.visible += viewer.name
                 // 创建客户端对应表
                 registerClientEntity(viewer)
                 // 生成实体
@@ -34,6 +35,7 @@ abstract class DefaultEntity(entityType: EntityTypes) : DefaultEntityInstance(en
             }
         } else {
             prepareDestroy(viewer) {
+                viewPlayers.visible -= viewer.name
                 // 销毁实体
                 Adyeshach.api().getMinecraftAPI().getEntityOperator().destroyEntity(viewer, index)
                 // 移除客户端对应表

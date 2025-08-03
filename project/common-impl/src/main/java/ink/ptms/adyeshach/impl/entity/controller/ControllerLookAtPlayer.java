@@ -9,12 +9,9 @@ import ink.ptms.adyeshach.core.entity.manager.PlayerManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import taboolib.library.xseries.XMaterial;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * net.minecraft.world.entity.ai.goal.PathfinderGoalLookAtPlayer

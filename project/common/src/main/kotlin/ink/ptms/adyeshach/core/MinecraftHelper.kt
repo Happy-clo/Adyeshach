@@ -84,4 +84,9 @@ interface MinecraftHelper {
      * 玩家是否正在观察某区块
      */
     fun isChunkVisible(player: Player, chunkX: Int, chunkZ: Int): Boolean
+
+    /**
+     * obc 转 nms
+     */
+    fun toMinecraft(entity: Entity): Any
 }

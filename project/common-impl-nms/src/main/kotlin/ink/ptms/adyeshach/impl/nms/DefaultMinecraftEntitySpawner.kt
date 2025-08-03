@@ -1,11 +1,11 @@
 package ink.ptms.adyeshach.impl.nms
 
-import ink.ptms.adyeshach.api.dataserializer.createDataSerializer
+import taboolib.module.nms.createDataSerializer
 import ink.ptms.adyeshach.core.*
 import ink.ptms.adyeshach.core.bukkit.BukkitDirection
 import ink.ptms.adyeshach.core.bukkit.BukkitPaintings
 import ink.ptms.adyeshach.core.entity.EntityTypes
-import ink.ptms.adyeshach.impl.nmsj17.NMSJ17
+import ink.ptms.adyeshach.impl.nms.specific.NMS19
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -96,7 +96,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeShort(0)
                     writeShort(0)
                     writeShort(0)
-                }.toNMS() as NMS9PacketDataSerializer)
+                }.build() as NMS9PacketDataSerializer)
             }
             // 1.14, 1.15, 1.16
             6, 7, 8 -> NMS16PacketPlayOutSpawnEntity().also {
@@ -114,7 +114,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeShort(0)
                     writeShort(0)
                     writeShort(0)
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             }
             // 1.17, 1.18, 1.19, 1.12
             9, 10, 11, 12 -> NMSPacketPlayOutSpawnEntity(createDataSerializer {
@@ -133,13 +133,13 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                             0, 1, 2 -> writeVarInt(NMSIRegistry.ENTITY_TYPE.getId(helper.adapt(entityType) as NMSEntityTypes<*>))
                             // 1.19.3, 1.19.4       -> this.type = (EntityTypes)var0.readById(BuiltInRegistries.ENTITY_TYPE);
                             // 注意从该版本开始 RegistryBlocks 的类型发生变化，无法在同一个模块内向下兼容
-                            3, 4 -> writeVarInt(NMSJ17.instance.entityTypeGetId(helper.adapt(entityType)))
+                            3, 4 -> writeVarInt(NMS19.instance.entityTypeGetId(helper.adapt(entityType)))
                             // 其他版本 -> error
                             else -> error("Unsupported version.")
                         }
                     }
                     // 1.12
-                    12 -> writeVarInt(NMSJ17.instance.entityTypeGetId(helper.adapt(entityType)))
+                    12 -> writeVarInt(NMS19.instance.entityTypeGetId(helper.adapt(entityType)))
                 }
                 writeDouble(location.x)
                 writeDouble(location.y)
@@ -159,7 +159,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 writeShort(0)
                 writeShort(0)
                 writeShort(0)
-            }.toNMS() as NMSPacketDataSerializer)
+            }.build() as NMSPacketDataSerializer)
             // 不支持
             else -> error("Unsupported version.")
         }
@@ -198,8 +198,8 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeShort(0)
                     writeShort(0)
                     // 不反射写进去会崩客户端，米哈游真有你的。
-                    NMS9DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(toNMS() as NMS9PacketDataSerializer)
-                }.toNMS() as NMS9PacketDataSerializer)
+                    NMS9DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(build() as NMS9PacketDataSerializer)
+                }.build() as NMS9PacketDataSerializer)
             }
             // 1.11, 1.12, 1.13
             3, 4, 5 -> NMS11PacketPlayOutSpawnEntityLiving().also {
@@ -223,8 +223,8 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeShort(0)
                     writeShort(0)
                     writeShort(0)
-                    NMS11DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(toNMS() as NMS11PacketDataSerializer)
-                }.toNMS() as NMS11PacketDataSerializer)
+                    NMS11DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(build() as NMS11PacketDataSerializer)
+                }.build() as NMS11PacketDataSerializer)
             }
             // 1.14, 1.15, 1.16
             6, 7, 8 -> NMS16PacketPlayOutSpawnEntityLiving().also {
@@ -244,9 +244,9 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeShort(0)
                     // 1.14, 1.15 仍需要读取 DataWatcher
                     if (major != 8) {
-                        NMS14DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(toNMS() as NMS14PacketDataSerializer)
+                        NMS14DataWatcher(null).also { dw -> livingDataWatcherSetterM.bindTo(it).invokeWithArguments(dw) }.a(build() as NMS14PacketDataSerializer)
                     }
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             }
             // 1.17, 1.18
             // 使用带有 DataSerializer 的构造函数生成数据包
@@ -269,7 +269,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 writeShort(0)
                 writeShort(0)
                 writeShort(0)
-            }.toNMS() as NMSPacketDataSerializer)
+            }.build() as NMSPacketDataSerializer)
             // 不支持
             else -> error("Unsupported version.")
         }
@@ -297,8 +297,8 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeDouble(location.z)
                     writeByte(yaw)
                     writeByte(pitch)
-                    NMS9DataWatcher(null).also { dw -> namedDataWatcherSetterH.bindTo(it).invokeWithArguments(dw) }.a(toNMS() as NMS9PacketDataSerializer)
-                }.toNMS() as NMS9PacketDataSerializer)
+                    NMS9DataWatcher(null).also { dw -> namedDataWatcherSetterH.bindTo(it).invokeWithArguments(dw) }.a(build() as NMS9PacketDataSerializer)
+                }.build() as NMS9PacketDataSerializer)
             }
             // 1.15, 1.16
             7, 8 -> NMS16PacketPlayOutSpawnEntityPlayer().also {
@@ -310,7 +310,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeDouble(location.z)
                     writeByte(yaw)
                     writeByte(pitch)
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             }
             // 1.17, 1.18, 1.19, 1.20
             // 使用带有 DataSerializer 的构造函数生成数据包
@@ -322,7 +322,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 writeDouble(location.z)
                 writeByte(yaw)
                 writeByte(pitch)
-            }.toNMS() as NMSPacketDataSerializer)
+            }.build() as NMSPacketDataSerializer)
             // 不支持
             else -> error("Unsupported version.")
         }
@@ -346,7 +346,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 writeDouble(location.y)
                 writeDouble(location.z)
                 writeShort(amount.toShort())
-            }.toNMS() as NMSPacketDataSerializer))
+            }.build() as NMSPacketDataSerializer))
         } else {
             packetHandler.sendPacket(player, NMS16PacketPlayOutSpawnEntityExperienceOrb().also {
                 it.a(createDataSerializer {
@@ -355,7 +355,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeDouble(location.y)
                     writeDouble(location.z)
                     writeShort(amount.toShort())
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             })
         }
     }
@@ -375,7 +375,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                 writeVarInt(id)
                 writeBlockPosition(location.blockX, location.blockY, location.blockZ)
                 writeByte(direction.get2DRotationValue().toByte())
-            }.toNMS() as NMSPacketDataSerializer))
+            }.build() as NMSPacketDataSerializer))
         }
         // 使用 IRegistry.MOTIVE
         else if (majorLegacy > 11300) {
@@ -386,7 +386,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeVarInt(id)
                     writeBlockPosition(location.blockX, location.blockY, location.blockZ)
                     writeByte(direction.get2DRotationValue().toByte())
-                }.toNMS() as NMS16PacketDataSerializer)
+                }.build() as NMS16PacketDataSerializer)
             })
         }
         // 使用字符串
@@ -398,7 +398,7 @@ class DefaultMinecraftEntitySpawner : MinecraftEntitySpawner {
                     writeString(painting.name)
                     writeBlockPosition(location.blockX, location.blockY, location.blockZ)
                     writeByte(direction.get2DRotationValue().toByte())
-                }.toNMS() as NMS9PacketDataSerializer)
+                }.build() as NMS9PacketDataSerializer)
             })
         }
     }

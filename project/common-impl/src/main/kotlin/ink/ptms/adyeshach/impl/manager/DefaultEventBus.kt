@@ -28,6 +28,8 @@ class DefaultEventBus : EventBus {
     val prepareMetaUpdates = LinkedList<Predicate<MetaUpdateEvent>>()
     val prepareMaskedMetaGenerates = LinkedList<Predicate<MetaMaskedGenerateEvent>>()
     val prepareNaturalMetaGenerates = LinkedList<Predicate<MetaNaturalGenerateEvent>>()
+    val postSpawn = LinkedList<Consumer<SpawnEvent>>()
+    val postDestroy = LinkedList<Consumer<DestroyEvent>>()
     val postMetaUpdates = LinkedList<Consumer<MetaUpdateEvent>>()
     val postTeleports = LinkedList<Consumer<TeleportEvent>>()
 
@@ -65,6 +67,14 @@ class DefaultEventBus : EventBus {
 
     fun callNaturalMetaGenerate(event: MetaNaturalGenerateEvent): Boolean {
         return prepareNaturalMetaGenerates.all { it.test(event) }
+    }
+
+    fun postSpawn(entity: EntityInstance, viewer: Player) {
+        postSpawn.forEach { it.accept(SpawnEvent(entity, viewer)) }
+    }
+
+    fun postDestroy(entity: EntityInstance, viewer: Player) {
+        postDestroy.forEach { it.accept(DestroyEvent(entity, viewer)) }
     }
 
     fun postMetaUpdate(event: MetaUpdateEvent) {
@@ -109,6 +119,14 @@ class DefaultEventBus : EventBus {
 
     override fun prepareNaturalMetaGenerate(callback: Predicate<MetaNaturalGenerateEvent>) {
         prepareNaturalMetaGenerates.add(callback)
+    }
+
+    override fun postSpawn(callback: Consumer<SpawnEvent>) {
+        postSpawn.add(callback)
+    }
+
+    override fun postDestroy(callback: Consumer<DestroyEvent>) {
+        postDestroy.add(callback)
     }
 
     override fun postMetaUpdate(callback: Consumer<MetaUpdateEvent>) {

@@ -118,8 +118,8 @@ class KetherController(entity: EntityInstance, val root: ConfigurationSection) :
 
     companion object {
 
-        /** 加载自定义控制器 */
-        private val customControllerLoader by resettableLazy {
+        @Awake(LifeCycle.ENABLE)
+        fun init() {
             var i = 0
             val registry = Adyeshach.api().getEntityControllerRegistry()
             val map = registry.getControllerGenerator()
@@ -136,11 +136,6 @@ class KetherController(entity: EntityInstance, val root: ConfigurationSection) :
             if (i > 0) {
                 info("Loaded $i custom controller(s).")
             }
-        }
-
-        @Awake(LifeCycle.ENABLE)
-        fun init() {
-            customControllerLoader
         }
 
         @JvmStatic

@@ -25,7 +25,7 @@ import java.util.*
  * @author sky
  * @since 2021/9/25 1:35 上午
  */
-class EntityModeled(val entityInstance: EntityInstance) : BaseEntity<EntityInstance> {
+internal class EntityModeled(val entityInstance: EntityInstance) : BaseEntity<EntityInstance> {
 
     val modelUniqueId: UUID = UUID.randomUUID()
 
