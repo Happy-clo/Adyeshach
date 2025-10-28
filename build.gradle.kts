@@ -39,7 +39,7 @@ subprojects {
         compileOnly("com.eatthepath:fast-uuid:0.2.0")
         compileOnly("org.spongepowered:math:2.0.1")
         // download
-        compileOnly("com.github.ben-manes.caffeine:caffeine:2.9.3")
+        compileOnly("com.github.ben-manes.caffeine:caffeine:3.2.3")
     }
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
