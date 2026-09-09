@@ -14,6 +14,7 @@ import ink.ptms.adyeshach.impl.nms.specific.NMS21
 import net.minecraft.core.Holder
 import net.minecraft.world.entity.decoration.PaintingVariant
 import org.bukkit.Art
+import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import org.bukkit.util.EulerAngle
@@ -73,6 +74,9 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
         // 1.20+
         if (MinecraftVersion.majorLegacy >= 12000) {
             addParser("SnifferState", SnifferStateParser())
+        }
+        if (MinecraftVersion.majorLegacy >= 12005) {
+            addParser("ColorParticle", ColorParticle())
         }
         if (MinecraftVersion.majorLegacy >= 12105) {
             addParser("Pig.Variant", PigVariantParser())
@@ -344,6 +348,10 @@ class DefaultMinecraftEntityMetadataHandler : MinecraftEntityMetadataHandler {
                 }
             }
         )
+    }
+
+    override fun createColorParticle(vararg colors: Color): MinecraftMeta {
+        return DefaultMeta(helper.adaptColorParticle(*colors))
     }
 
     override fun createParticleMeta(index: Int, particle: BukkitParticles): MinecraftMeta {

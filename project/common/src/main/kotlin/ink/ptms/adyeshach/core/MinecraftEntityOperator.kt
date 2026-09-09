@@ -210,8 +210,15 @@ interface MinecraftEntityOperator {
         updatePlayerSleeping(listOf(player), entityId, location)
     }
 
-    fun updateAttribute(player: List<Player>, entityId: Int, attribute: List<XAttribute>, vararg value: Double)
-    fun updateAttribute(player: Player, entityId: Int, attribute: List<XAttribute>, vararg value: Double) {
-        updateAttribute(listOf(player), entityId, attribute, *value)
+    /**
+     * 修改实体属性
+     *
+     * @param player 数据包接收人
+     * @param entityId 实体序号
+     * @param attribute 属性
+     */
+    fun updateAttribute(player: List<Player>, entityId: Int, attribute: Map<XAttribute, Double>)
+    fun updateAttribute(player: Player, entityId: Int, attribute: Map<XAttribute, Double>) {
+        updateAttribute(listOf(player), entityId, attribute)
     }
 }

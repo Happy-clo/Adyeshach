@@ -990,6 +990,11 @@ ink.ptms.adyeshach.core.entity.type.AdyEntityLiving
         09 -
      potionEffectColor i
         &living1
+        @!12005-
+        ~
+     potionEffectColor !ColorParticle 0-0-0
+        &living1
+        @!12005+
         ~
 #     疑似放错位置了
 #     beeStingersEntity i 0

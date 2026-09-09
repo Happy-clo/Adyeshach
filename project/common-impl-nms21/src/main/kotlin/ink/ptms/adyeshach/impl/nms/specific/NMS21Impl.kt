@@ -15,6 +15,8 @@ import ink.ptms.adyeshach.impl.nms.NMSIChatBaseComponent
 import ink.ptms.adyeshach.impl.nms.NMSPacketDataSerializer
 import net.minecraft.EnumChatFormat
 import net.minecraft.core.Holder
+import net.minecraft.core.particles.ColorParticleOption
+import net.minecraft.core.particles.Particles
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.*
 import net.minecraft.network.syncher.DataWatcher
@@ -91,14 +93,7 @@ class NMS21Impl : NMS21 {
     }
 
     override fun createSpawnEntity(
-        entityId: Int,
-        uuid: UUID,
-        location: Location,
-        yaw: Float,
-        pitch: Float,
-        data: Int,
-        entityType: Int,
-        yhead: Double
+        entityId: Int, uuid: UUID, location: Location, yaw: Float, pitch: Float, data: Int, entityType: Int, yhead: Double
     ): Any {
         val type = if (MinecraftVersion.versionId >= 12005) {
             BuiltInRegistries.ENTITY_TYPE.byId(entityType)
@@ -123,10 +118,7 @@ class NMS21Impl : NMS21 {
             "net.minecraft.network.protocol.game.ClientboundAddExperienceOrbPacket#STREAM_CODEC:net.minecraft.network.codec.StreamCodec"
         )
         return dynamic(
-            DynamicOpcode.INVOKEVIRTUAL,
-            "net.minecraft.network.codec.StreamCodec#decode(java.lang.Object;)java.lang.Object;",
-            codec,
-            serializer
+            DynamicOpcode.INVOKEVIRTUAL, "net.minecraft.network.codec.StreamCodec#decode(java.lang.Object;)java.lang.Object;", codec, serializer
         )!!
     }
 
@@ -147,15 +139,9 @@ class NMS21Impl : NMS21 {
 
     override fun createTeleport(entityId: Int, location: Location, yaw: Byte, pitch: Byte, onGround: Boolean): Any {
         return PacketPlayOutEntityTeleport(
-            entityId,
-            PositionMoveRotation(
-                Vec3D(location.x, location.y, location.z),
-                Vec3D(location.x, location.y, location.z),
-                ifloor(yaw * 256.0 / 360.0).toFloat(),
-                pitch.toFloat()
-            ),
-            setOf(Relative.X, Relative.Y, Relative.Z),
-            onGround
+            entityId, PositionMoveRotation(
+                Vec3D(location.x, location.y, location.z), Vec3D(location.x, location.y, location.z), ifloor(yaw * 256.0 / 360.0).toFloat(), pitch.toFloat()
+            ), setOf(Relative.X, Relative.Y, Relative.Z), onGround
         )
     }
 
@@ -260,8 +246,7 @@ class NMS21Impl : NMS21 {
 
     override fun createBlockStateMeta(index: Int, material: MaterialData): Any {
         return DataWatcher.Item(
-            DataWatcherObject(index, DataWatcherRegistry.BLOCK_STATE),
-            CraftBlockData.newData(material.itemType.asBlockType(), null).state
+            DataWatcherObject(index, DataWatcherRegistry.BLOCK_STATE), CraftBlockData.newData(material.itemType.asBlockType(), null).state
         )
     }
 
@@ -345,6 +330,17 @@ class NMS21Impl : NMS21 {
             AttributeModifiable(CraftAttribute.bukkitToMinecraftHolder(it.key.get())) {}.apply { baseValue = it.value }
         }
         return PacketPlayOutUpdateAttributes(entityId, modifiable)
+    }
+
+    override fun createColorParticle(index: Int, vararg colors: Color): Any {
+        return DataWatcher.Item(
+            DataWatcherObject(index, DataWatcherRegistry.PARTICLES),
+            adaptColorParticle(*colors) as List<ColorParticleOption>
+        )
+    }
+
+    override fun adaptColorParticle(vararg colors: Color): Any {
+        return colors.map { ColorParticleOption.create(Particles.ENTITY_EFFECT, it.asARGB()) }
     }
 
     private fun <T> T.direct(): Holder<T> {

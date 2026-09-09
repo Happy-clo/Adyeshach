@@ -12,6 +12,7 @@ import ink.ptms.adyeshach.impl.nms.specific.NMS20p
 import ink.ptms.adyeshach.impl.nms.specific.NMS21
 import ink.ptms.adyeshach.minecraft.ChunkPos
 import net.minecraft.network.chat.IChatBaseComponent
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
@@ -113,6 +114,10 @@ class DefaultMinecraftHelper : MinecraftHelper {
 
     override fun adaptTropicalFishPattern(pattern: TropicalFish.Pattern): Int {
         return CraftTropicalFishPattern19.values()[pattern.ordinal].dataValue
+    }
+
+    override fun adaptColorParticle(vararg colors: Color): List<Any> {
+        return NMS21.instance.adaptColorParticle(*colors) as List<Any>
     }
 
     override fun getEntity(world: World, id: Int): Entity? {

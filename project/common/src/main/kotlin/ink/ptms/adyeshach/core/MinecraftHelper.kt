@@ -3,6 +3,7 @@ package ink.ptms.adyeshach.core
 import ink.ptms.adyeshach.core.bukkit.BukkitPaintings
 import ink.ptms.adyeshach.core.bukkit.BukkitParticles
 import ink.ptms.adyeshach.core.entity.EntityTypes
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
@@ -49,6 +50,8 @@ interface MinecraftHelper {
      * 将 TropicalFish.Pattern 转换为 int 类型
      */
     fun adaptTropicalFishPattern(pattern: TropicalFish.Pattern): Int
+
+    fun adaptColorParticle(vararg colors: Color): List<Any>
 
     /**
      * 通过 id 获取实体

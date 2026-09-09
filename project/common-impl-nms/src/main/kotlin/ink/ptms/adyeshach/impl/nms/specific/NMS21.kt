@@ -8,6 +8,7 @@ import ink.ptms.adyeshach.core.bukkit.data.GameProfile
 import ink.ptms.adyeshach.core.bukkit.data.VillagerData
 import ink.ptms.adyeshach.impl.nms.NMSEntityPose
 import org.bukkit.Art
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.material.MaterialData
@@ -157,6 +158,10 @@ interface NMS21 {
     fun isChunkSent(player: Player, chunkX: Int, chunkZ: Int): Boolean
 
     fun createAttribute(entityId: Int, attributes: Map<XAttribute, Double>): Any
+
+    fun createColorParticle(index: Int, vararg colors: Color): Any
+
+    fun adaptColorParticle(vararg colors: Color): Any
 
     companion object {
         val instance by unsafeLazy { nmsProxy<NMS21>() }

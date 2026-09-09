@@ -4,6 +4,7 @@ import ink.ptms.adyeshach.core.bukkit.*
 import ink.ptms.adyeshach.core.bukkit.data.VillagerData
 import ink.ptms.adyeshach.core.entity.type.AdyEntity
 import ink.ptms.adyeshach.core.entity.type.AdySniffer
+import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import org.bukkit.util.EulerAngle
@@ -106,6 +107,11 @@ interface MinecraftEntityMetadataHandler {
      * 生成 Boolean 类型的元数据
      */
     fun createBooleanMeta(index: Int, value: Boolean): MinecraftMeta
+
+    /**
+     * 生成 ColorParticleOptions 类型的元数据
+     */
+    fun createColorParticle(vararg colors: Color): MinecraftMeta
 
     /**
      * 生成 ParticleParam 类型的元数据，对应 PARTICLE 字段

@@ -62,5 +62,7 @@ enum class CustomType(val id: String) {
 
     COPPER_GOLEM_STATUE_POSE("CopperGolemStatuePose"),
 
+    COLOR_PARTICLE("ColorParticle"),
+
     ;
 }

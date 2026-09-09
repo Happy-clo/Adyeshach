@@ -114,7 +114,7 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
                     submit(delay = 10) { removePlayerInfo(viewer) }
                 }
                 if (MinecraftVersion.versionId >= 12005) {
-                    Adyeshach.api().getMinecraftAPI().getEntityOperator().updateAttribute(viewer, index, listOf(XAttribute.SCALE), score.toDouble())
+                    Adyeshach.api().getMinecraftAPI().getEntityOperator().updateAttribute(viewer, index, mapOf(XAttribute.SCALE to score.toDouble()))
                 }
                 spawned = true
             }
@@ -197,7 +197,7 @@ abstract class DefaultHuman(entityTypes: EntityTypes) : DefaultEntityLiving(enti
     override fun setSize(size: Int) {
         score = size
         if (MinecraftVersion.versionId < 12005) return
-        forViewers { Adyeshach.api().getMinecraftAPI().getEntityOperator().updateAttribute(it, index, listOf(XAttribute.SCALE), size.toDouble()) }
+        forViewers { Adyeshach.api().getMinecraftAPI().getEntityOperator().updateAttribute(it, index, mapOf(XAttribute.SCALE to size.toDouble())) }
     }
 
     override fun getSize(): Int {

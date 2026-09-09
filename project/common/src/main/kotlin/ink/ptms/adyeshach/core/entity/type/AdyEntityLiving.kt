@@ -1,8 +1,10 @@
 package ink.ptms.adyeshach.core.entity.type
 
+import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.entity.EntityEquipable
 import org.bukkit.Color
 import org.bukkit.entity.Player
+import taboolib.module.nms.MinecraftVersion
 
 /**
  * @author sky
@@ -71,7 +73,12 @@ interface AdyEntityLiving : AdyEntity, EntityEquipable {
      * 1.21未解决
      */
     fun setPotionEffectColor(value: Color) {
-        setMetadata("potionEffectColor", value.asRGB())
+        val color = if (MinecraftVersion.versionId >= 12005) { minecraftVersion
+            Adyeshach.api().getMinecraftAPI().getHelper().adaptColorParticle(value)
+        } else {
+            value.asRGB()
+        }
+        setMetadata("potionEffectColor", color)
     }
 
     /**

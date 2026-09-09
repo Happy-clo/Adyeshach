@@ -252,11 +252,11 @@ class DefaultMinecraftEntityOperator : MinecraftEntityOperator {
         })
     }
 
-    override fun updateAttribute(player: List<Player>, entityId: Int, attribute: List<XAttribute>, vararg value: Double) {
+    override fun updateAttribute(player: List<Player>, entityId: Int, attribute: Map<XAttribute, Double>) {
         val attributePacket = try {
-            NMS19.instance.createAttribute(entityId, attribute, *value)
+            NMS19.instance.createAttribute(entityId, attribute)
         } catch (_: NoSuchMethodError) {
-            NMS21.instance.createAttribute(entityId, attribute, *value)
+            NMS21.instance.createAttribute(entityId, attribute)
         }
         packetHandler.sendPacket(player, attributePacket)
     }

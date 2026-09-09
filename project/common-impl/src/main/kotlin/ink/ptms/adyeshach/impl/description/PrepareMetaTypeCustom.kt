@@ -64,6 +64,7 @@ class PrepareMetaTypeCustom(val type: CustomType) : PrepareMetaType {
             CustomType.COPPER_WEATHERING_STATE -> PrepareMetaNatural(name, BukkitCopperWeatherState.UNAFFECTED, "CopperGolem.WeatherState")
             CustomType.COPPER_GOLEM_STATUE_POSE -> PrepareMetaNatural(name, BukkitCopperGolemStatuePose.IDLE, "CopperGolem.Statue")
             CustomType.COW_VARIANT -> PrepareMetaNatural(name, BukkitCowVariant.NORMAL, "Cow.Variant")
+            CustomType.COLOR_PARTICLE-> PrepareMetaNatural(name,0,"ColorParticle")
         }
     }
 
