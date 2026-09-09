@@ -4,6 +4,7 @@ import ink.ptms.adyeshach.core.Adyeshach
 import ink.ptms.adyeshach.core.entity.EntityEquipable
 import org.bukkit.Color
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -70,11 +71,15 @@ interface AdyEntityLiving : AdyEntity, EntityEquipable {
 
     /**
      * 设置实体药水颜色
-     * 1.21未解决
      */
     fun setPotionEffectColor(value: Color) {
-        val color = if (MinecraftVersion.versionId >= 12005) { minecraftVersion
-            Adyeshach.api().getMinecraftAPI().getHelper().adaptColorParticle(value)
+        val color = if (MinecraftVersion.versionId >= 12005) {
+            val helper = Adyeshach.api().getMinecraftAPI().getHelper()
+            if (value.asRGB() == 0) {
+                helper.adaptColorParticle()
+            } else {
+                helper.adaptColorParticle(value)
+            }
         } else {
             value.asRGB()
         }

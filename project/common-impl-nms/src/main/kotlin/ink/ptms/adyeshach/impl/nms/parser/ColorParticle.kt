@@ -14,6 +14,12 @@ class ColorParticle : MinecraftMetadataParser<Any>() {
     }
 
     override fun createMeta(index: Int, value: Any): MinecraftMeta {
-        return DefaultMeta(NMS21.instance.createColorParticle(index, Color.fromRGB(value.cint)))
+        return DefaultMeta(
+            if (value == 0) {
+                NMS21.instance.createColorParticle(index)
+            } else {
+                NMS21.instance.createColorParticle(index, Color.fromRGB(value.cint))
+            }
+        )
     }
 }
